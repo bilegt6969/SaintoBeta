@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/container-queries";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  html {
+    color-scheme: light;
+  }
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  img[loading="lazy"] {
+    clip-path: inset(0.6px);
+  }
+}
+
+a,
+input,
+button {
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .island-motion {
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@layer components {
+  .island-surface {
+    background: linear-gradient(
+      180deg,
+      rgb(210 210 215 / 0.9) 0%,
+      rgb(186 186 192 / 0.94) 100%
+    );
+    -webkit-backdrop-filter: blur(24px) saturate(1.05);
+    backdrop-filter: blur(24px) saturate(1.05);
+    border: 1px solid rgb(255 255 255 / 0.28);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.35),
+      0 10px 36px rgb(0 0 0 / 0.1);
+  }
+
+  .island-inset {
+    background: rgb(0 0 0 / 0.09);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.22);
+  }
+
+  .island-surface :is(a, button, input):focus-visible {
+    --tw-ring-offset-color: transparent;
+    --tw-ring-color: rgb(0 0 0 / 0.12);
+  }
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .island-surface {
+    background: #bcbcc2;
+  }
+}
