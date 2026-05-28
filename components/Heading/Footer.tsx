@@ -75,13 +75,13 @@ export default function Footer({ siteName }: FooterProps) {
           page background — increased padding to show full height.
         */}
         <div className="relative pb-[clamp(12rem,30vw,20rem)]">
-          {/* Frame33 — bottom layer, anchored to footer bottom */}
+          {/* frame69 — bottom layer, anchored to footer bottom */}
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center"
             aria-hidden
           >
             <Image
-              src="/Frame33.svg"
+              src="/frame69.svg"
               alt=""
               width={1666}
               height={360}
@@ -101,7 +101,7 @@ export default function Footer({ siteName }: FooterProps) {
                     aria-label={SITE_NAME}
                   >
                     <Image
-                      src="/Frame33.svg"
+                      src="/logo.svg"
                       alt=""
                       width={1666}
                       height={360}

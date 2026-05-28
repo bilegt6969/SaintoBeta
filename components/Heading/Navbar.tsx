@@ -37,10 +37,10 @@ export default function Navbar({ siteName }: { siteName: string }) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    
+
     // Check initial scroll position on mount
     handleScroll();
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -77,7 +77,7 @@ export default function Navbar({ siteName }: { siteName: string }) {
   return (
     <div className="relative w-full">
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[99] h-[88px] lg:top-0 lg:bottom-auto" />
-      
+
       {/* Desktop Top Scroll Blur Mask */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -85,7 +85,8 @@ export default function Navbar({ siteName }: { siteName: string }) {
         transition={{ duration: 0.5, ease: smoothEase }}
         className="pointer-events-none fixed inset-x-0 top-0 z-[90] hidden h-32 bg-white/20 backdrop-blur-md lg:block"
         style={{
-          WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 20%, transparent 100%)",
           maskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
         }}
       />
@@ -97,7 +98,8 @@ export default function Navbar({ siteName }: { siteName: string }) {
         transition={{ duration: 0.5, ease: smoothEase }}
         className="pointer-events-none fixed inset-x-0 bottom-0 z-[90] block h-32 bg-white/20 backdrop-blur-md lg:hidden"
         style={{
-          WebkitMaskImage: "linear-gradient(to top, black 20%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to top, black 20%, transparent 100%)",
           maskImage: "linear-gradient(to top, black 20%, transparent 100%)",
         }}
       />
@@ -120,21 +122,20 @@ export default function Navbar({ siteName }: { siteName: string }) {
                 <Link
                   href="/"
                   prefetch
-                  className="island-inset flex h-9 shrink-0 items-center rounded-full bg-white px-3 transition-opacity hover:opacity-80 sm:px-3.5"
+                  className="island-inset flex h-8.5 shrink-0 items-center rounded-full bg-white px-3 transition-opacity hover:opacity-80 sm:px-2.5"
                   aria-label={siteName}
                 >
                   <Image
-                    src="/Frame33.svg"
+                    src="/logo.svg"
                     alt={siteName}
                     width={1666}
                     height={360}
-                    className="h-4 w-auto max-w-[5.5rem] object-contain object-left brightness-50 sm:h-[1.125rem] sm:max-w-[6.5rem]"
+                    className="h-4 w-auto max-w-[5.5rem] object-contain object-left brightness-50 sm:h-[1rem] sm:max-w-[6rem]"
                     priority
                   />
                 </Link>
                 <Menu />
               </div>
-
               <div className="flex items-center gap-1 sm:gap-1.5">
                 <button
                   type="button"
@@ -167,7 +168,6 @@ export default function Navbar({ siteName }: { siteName: string }) {
                   )}
                 </button>
               </div>
-
               {!isLargeScreen && (
                 <MobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
               )}
