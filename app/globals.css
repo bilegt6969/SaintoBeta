@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/container-queries";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  html {
+    color-scheme: light;
+  }
+}
+
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  img[loading="lazy"] {
+    clip-path: inset(0.6px);
+  }
+}
+
+a,
+input,
+button {
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .island-motion {
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@layer components {
+  .island-surface {
+    background: linear-gradient(
+      180deg,
+      rgb(210 210 215 / 0.9) 0%,
+      rgb(186 186 192 / 0.94) 100%
+    );
+    -webkit-backdrop-filter: blur(24px) saturate(1.05);
+    backdrop-filter: blur(24px) saturate(1.05);
+    border: 1px solid rgb(255 255 255 / 0.28);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.35),
+      0 10px 36px rgb(0 0 0 / 0.1);
+  }
+
+  .island-inset {
+    background: rgb(0 0 0 / 0.09);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.22);
+  }
+
+  .island-surface :is(a, button, input):focus-visible {
+    --tw-ring-offset-color: transparent;
+    --tw-ring-color: rgb(0 0 0 / 0.12);
+  }
+
+  /* Category mobile bento */
+  .category-bento-mobile {
+    --bento-gap: 0.75rem;
+    --bento-col: calc((100% - var(--bento-gap)) / 2);
+    --black-card-h: calc(var(--bento-col) * 3 / 4);
+  }
+
+  /* Hero: black card left, featured product right (same row) */
+  .category-bento-hero {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "sidebar feature";
+    column-gap: var(--bento-gap);
+    align-items: start;
+  }
+
+  .category-bento-sidebar {
+    grid-area: sidebar;
+    min-width: 0;
+  }
+
+  .category-bento-hero-feature {
+    grid-area: feature;
+    display: flex;
+    min-width: 0;
+    height: var(--black-card-h);
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .category-bento-hero-feature .group {
+    width: 100%;
+    max-width: var(--black-card-h);
+  }
+
+  /* Hero: image only, square = card height */
+  .category-bento-hero-feature .group > a > *:not(:first-child),
+  .category-bento-hero-feature .group > div > *:not(:first-child) {
+    display: none;
+  }
+
+  .category-bento-hero-feature .category-bento-product-image {
+    width: 100%;
+    max-width: var(--black-card-h);
+    height: var(--black-card-h);
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+  }
+
+  .category-bento-sidebar article {
+    width: 100%;
+  }
+
+  .category-bento-sidebar article > div {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Rest: 2-col bento; row height = one column width (square tiles) */
+  .category-bento-rest {
+    grid-auto-flow: dense;
+    grid-auto-rows: var(--bento-col);
+  }
+
+  .category-bento-product-slot {
+    min-width: 0;
+  }
+
+  .category-bento-rest .category-bento-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  .category-bento-rest > .row-span-2 .category-bento-product-image {
+    height: 100%;
+  }
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .island-surface {
+    background: #bcbcc2;
+  }
+}
