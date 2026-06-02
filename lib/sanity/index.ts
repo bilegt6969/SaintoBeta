@@ -2,6 +2,7 @@ import type {
   Cart,
   CategoryPage,
   Collection,
+  Hero,
   Menu,
   Page,
   Product,
@@ -25,11 +26,13 @@ import { sanityClient } from "./client";
 import {
   mapSanityCategoryPage,
   mapSanityCollection,
+  mapSanityHero,
   mapSanityMenu,
   mapSanityPage,
   mapSanityProduct,
   type SanityCategoryPage,
   type SanityCollection,
+  type SanityHero,
   type SanityMenu,
   type SanityPage,
   type SanityProduct,
@@ -88,6 +91,17 @@ const collectionByHandleQuery = `*[_type == "collection" && slug.current == $han
 const menuByHandleQuery = `*[_type == "menu" && slug.current == $handle][0]{
   items
 }`;
+
+const heroFields = `
+  _id,
+  title,
+  desktopImage,
+  mobileImage,
+  enabled,
+  sortOrder
+`;
+
+const heroesQuery = `*[_type == "hero" && enabled == true] | order(sortOrder asc, _createdAt desc) {${heroFields}}`;
 
 const pageByHandleQuery = `*[_type == "page" && slug.current == $handle][0]{
   _id,
@@ -354,6 +368,24 @@ export async function getCollections(): Promise<Collection[]> {
   ];
 }
 
+export async function getHeroes(): Promise<Hero[]> {
+  "use cache";
+  cacheTag(TAGS.hero);
+  cacheLife("days");
+
+  if (!isSanityConfigured()) {
+    return [];
+  }
+
+  const docs = await sanityClient.fetch<SanityHero[]>(heroesQuery);
+  return docs.map(mapSanityHero);
+}
+
+export async function getHero(): Promise<Hero | undefined> {
+  const heroes = await getHeroes();
+  return heroes[0];
+}
+
 export async function getMenu(handle: string): Promise<Menu[]> {
   "use cache";
   cacheTag(TAGS.collections);
@@ -497,6 +529,7 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
   revalidateTag(TAGS.collections, "days");
   revalidateTag(TAGS.categoryPages, "days");
   revalidateTag(TAGS.products, "days");
+  revalidateTag(TAGS.hero, "days");
 
   return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
 }
