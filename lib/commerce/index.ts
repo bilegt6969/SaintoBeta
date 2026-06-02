@@ -5,6 +5,7 @@ export type {
   CartItem,
   CategoryPage,
   Collection,
+  Hero,
   Image,
   KeyIngredient,
   KeyIngredientsSection,
@@ -17,7 +18,7 @@ export type {
   ProductVariant,
   PurchaseBundleOption,
   PurchaseBundles,
-  SEO,
+  SEO
 } from "lib/commerce/types";
 
 export {
@@ -30,13 +31,13 @@ export {
   getCollection,
   getCollectionProducts,
   getCollections,
+  getHero,
+  getHeroes,
   getMenu,
   getPage,
   getPages,
   getProduct,
   getProductRecommendations,
-  getProducts,
-  revalidate,
-  removeFromCart,
-  updateCart,
+  getProducts, removeFromCart, revalidate, updateCart
 } from "lib/sanity";
+
