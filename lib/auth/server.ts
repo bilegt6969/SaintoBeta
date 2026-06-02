@@ -1,4 +1,4 @@
-import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
+import { cert, getApps, initializeApp, type App } from "firebase-admin";
 import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
 import {
   AUTH_SESSION_COOKIE,

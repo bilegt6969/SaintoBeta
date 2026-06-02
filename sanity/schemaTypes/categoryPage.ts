@@ -50,20 +50,7 @@ export const categoryPage = defineType({
       group: "home",
       to: [{ type: "product" }],
       description:
-        "The product card shown on the home page for this category. Must be a product assigned to this category.",
-      options: {
-        filter: ({ document }) => {
-          const categoryId = document?._id;
-          if (!categoryId || typeof categoryId !== "string") {
-            return { filter: '_type == "product"' };
-          }
-          return {
-            filter: "category._ref == $categoryId",
-            params: { categoryId },
-          };
-        },
-      },
-      validation: (rule) => rule.required(),
+        "The product card shown on the home page for this category. Select any product - you can assign products to this category after creating the page.",
     }),
     defineField({
       name: "showOnHome",

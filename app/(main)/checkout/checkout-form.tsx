@@ -270,7 +270,7 @@ export function CheckoutForm({
 
           <div className="flex items-center h-5">
             <img
-              src="/frame69.svg"
+              src="/Lelogo.svg"
               alt="Brand Logo"
               className="h-full w-auto object-contain invert"
             />
@@ -606,7 +606,8 @@ export function CheckoutForm({
                                 fontFamily: "monospace",
                               }}
                             >
-                              {txCode || (isReservingCode ? "Generating..." : "—")}
+                              {txCode ||
+                                (isReservingCode ? "Generating..." : "—")}
                             </span>
                           </div>
                           <p

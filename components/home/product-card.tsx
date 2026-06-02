@@ -1,8 +1,8 @@
 "use client";
 
 import Price from "components/price";
-import type { Product } from "lib/commerce";
 import { cn } from "lib/cn";
+import type { Product } from "lib/commerce";
 import {
   getProductBrand,
   getProductCategory,
@@ -16,8 +16,7 @@ function StaffPickBadge({ compact = false }: { compact?: boolean }) {
     <div
       className={cn(
         "absolute left-4 top-4 z-20 flex items-center gap-1.5 text-sm font-medium text-violet-600",
-        compact &&
-          "max-lg:left-2 max-lg:top-2 max-lg:gap-1 max-lg:text-[10px]",
+        compact && "max-lg:left-2 max-lg:top-2 max-lg:gap-1 max-lg:text-[10px]",
       )}
     >
       <svg
@@ -47,7 +46,7 @@ export function HomeProductCard({
   product: Product;
   priority?: boolean;
   href?: string;
-  density?: "default" | "compact";
+  density?: "default" | "compact" | "bento";
 }) {
   const brand = getProductBrand(product);
   const category = getProductCategory(product);
@@ -56,10 +55,13 @@ export function HomeProductCard({
   const isOutOfStock = product.outOfStock;
   const productHref = href ?? `/product/${product.handle}`;
   const isCompact = density === "compact";
+  const isBento = density === "bento";
 
   const imageSizes = isCompact
     ? "(max-width: 1023px) 45vw, (min-width: 1024px) 30vw"
-    : "(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw";
+    : isBento
+      ? "(max-width: 1023px) 45vw, 30vw"
+      : "(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw";
 
   const imageBlock = (
     <div
@@ -67,6 +69,7 @@ export function HomeProductCard({
         "category-bento-product-image relative w-full overflow-hidden rounded-2xl bg-[#f3f3f3]",
         !isCompact && "aspect-square",
         isCompact && "aspect-square max-lg:rounded-xl",
+        isBento && "aspect-square rounded-xl",
         isOutOfStock && "grayscale opacity-60",
       )}
     >
@@ -80,12 +83,13 @@ export function HomeProductCard({
           className={cn(
             "object-contain p-6",
             isCompact && "max-lg:object-cover max-lg:p-2",
+            isBento && "object-cover p-4",
             !isOutOfStock &&
               "transition duration-500 ease-out group-hover:scale-[1.03]",
           )}
         />
       ) : null}
-      {!isOutOfStock ? (
+      {!isOutOfStock && !isBento ? (
         <div
           className="pointer-events-none absolute inset-0 z-10 opacity-0 backdrop-blur-[20px] transition-opacity duration-500 ease-out group-hover:opacity-100 max-lg:hidden"
           style={{
@@ -95,11 +99,38 @@ export function HomeProductCard({
           }}
         />
       ) : null}
-      {staffPick ? <StaffPickBadge compact={isCompact} /> : null}
+      {staffPick ? <StaffPickBadge compact={isCompact || isBento} /> : null}
+
+      {/* Bottom white gradient fade + centered category label (mobile only) */}
+      <div
+        className={cn(
+          "pointer-events-none absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center bg-gradient-to-t from-[#ececec] to-transparent lg:hidden",
+          "px-3 pb-4 pt-16",
+          isCompact && "max-lg:px-2 max-lg:pb-2.5 max-lg:pt-10",
+          isBento && "px-2 pb-3 pt-12",
+        )}
+      >
+        <p
+          className={cn(
+            "text-center text-sm font-medium leading-snug text-neutral-500",
+            isCompact && "max-lg:text-[10px]",
+            isBento && "text-xs",
+          )}
+        >
+          {category}
+        </p>
+      </div>
     </div>
   );
 
-  const meta = (
+  // Leave only the category name when in bento mode
+  const meta = isBento ? (
+    <div className="hidden mt-1.5 px-0.5 md:block">
+      <p className="truncate text-xs font-medium text-neutral-500">
+        {category}
+      </p>
+    </div>
+  ) : (
     <div
       className={cn(
         "mt-3 space-y-1",
@@ -146,7 +177,10 @@ export function HomeProductCard({
   return (
     <article className="group min-w-0">
       {isOutOfStock ? (
-        <div className="block cursor-not-allowed" onClick={(e) => e.preventDefault()}>
+        <div
+          className="block cursor-not-allowed"
+          onClick={(e) => e.preventDefault()}
+        >
           {imageBlock}
           {meta}
         </div>

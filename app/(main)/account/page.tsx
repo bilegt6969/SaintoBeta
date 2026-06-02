@@ -137,7 +137,7 @@ export default function AccountPage() {
           {/* Logo Brand Frame */}
           <div className="flex items-center h-5">
             <img
-              src="/frame69.svg"
+              src="/Lelogo.svg"
               alt="Sainto Logo"
               className="h-full w-auto object-contain invert"
             />

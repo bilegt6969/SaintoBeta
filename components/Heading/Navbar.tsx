@@ -120,7 +120,7 @@ export default function Navbar({
                   aria-label={siteName}
                 >
                   <Image
-                    src="/logo.svg"
+                    src="/Lelogo.svg"
                     alt={siteName}
                     width={1666}
                     height={360}
@@ -134,12 +134,14 @@ export default function Navbar({
                 <button
                   type="button"
                   onClick={() => setIsSearchOpen((prev) => !prev)}
-                  className="island-inset flex h-9 items-center gap-1.5 rounded-full bg-neutral-100 px-3 text-[13px] font-medium text-neutral-800 transition-opacity hover:opacity-80 sm:px-3.5 sm:text-sm"
+                  className="island-inset flex h-9 items-center gap-1.5 rounded-full bg-white px-3 text-[13px] font-medium text-neutral-800 transition-opacity hover:opacity-80 sm:px-3.5 sm:text-sm"
                   aria-label={isSearchOpen ? "Close search" : "Search"}
                   aria-expanded={isSearchOpen}
                 >
                   <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
-                  <span className="hidden min-[420px]:inline">Search</span>
+                  <span className="hidden min-[440px]:inline tracking-tight">
+                    хайх
+                  </span>
                 </button>
 
                 <div className="text-neutral-800 [&_button]:text-neutral-800">

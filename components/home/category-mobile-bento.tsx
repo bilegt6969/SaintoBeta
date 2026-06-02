@@ -1,15 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
-import { Children, isValidElement } from "react";
+import { Children, cloneElement, isValidElement } from "react";
 
-/** Bento span pattern for products after the hero row */
-const REST_BENTO_CLASS =
-  "col-span-1 row-span-1 [&:nth-child(3n)]:col-span-2 [&:nth-child(6n)]:row-span-2";
-
-/**
- * Mobile category bento:
- * Row 1 — black card (left, 4:3) + featured product (right, square, same height as card)
- * Below — 2-column bento grid (wide / tall cells on a cycle)
- */
 export function CategoryMobileBento({
   sidebar,
   children,
@@ -19,39 +10,52 @@ export function CategoryMobileBento({
   children: ReactNode;
   emptyMessage?: string;
 }) {
-  const items = Children.toArray(children).filter(isValidElement) as ReactElement[];
-  const [featured, ...rest] = items;
+  const items = Children.toArray(children).filter(
+    isValidElement,
+  ) as ReactElement[];
+
+  const bentoSidebar = isValidElement(sidebar)
+    ? cloneElement(sidebar as ReactElement, { variant: "bento" })
+    : sidebar;
 
   if (items.length === 0) {
     return (
       <div className="category-bento-mobile w-full lg:hidden">
-        <div className="category-bento-hero">{sidebar}</div>
-        <p className="mt-3 text-sm text-neutral-500">{emptyMessage}</p>
+        <div className="category-bento-sidebar">{bentoSidebar}</div>
+        <p className="mt-3 text-sm text-neutral-500">
+          {emptyMessage ?? "No products yet."}
+        </p>
       </div>
     );
   }
 
+  const leftColumnItems = items.filter((_, idx) => idx % 2 === 1);
+  const rightColumnItems = items.filter((_, idx) => idx % 2 === 0);
+
   return (
     <div className="category-bento-mobile w-full lg:hidden">
-      <div className="category-bento-hero">
-        <div className="category-bento-sidebar">{sidebar}</div>
-        {featured ? (
-          <div className="category-bento-hero-feature">{featured}</div>
-        ) : null}
-      </div>
-
-      {rest.length > 0 ? (
-        <div className="category-bento-rest mt-3 grid grid-cols-2 gap-3">
-          {rest.map((child, index) => (
-            <div
-              key={child.key ?? `rest-${index}`}
-              className={`category-bento-product-slot min-w-0 ${REST_BENTO_CLASS}`}
-            >
-              {child}
+      <div className="flex gap-[var(--bento-gap)] items-start">
+        {/* Left Column */}
+        <div className="flex flex-1 flex-col gap-[var(--bento-gap)] min-w-0">
+          <div className="category-bento-sidebar">{bentoSidebar}</div>
+          {leftColumnItems.map((child, index) => (
+            <div key={child.key ?? `left-${index}`} className="min-w-0">
+              {/* Force the child card to use bento density layout */}
+              {cloneElement(child, { density: "bento" } as any)}
             </div>
           ))}
         </div>
-      ) : null}
+
+        {/* Right Column */}
+        <div className="flex flex-1 flex-col gap-[var(--bento-gap)] min-w-0">
+          {rightColumnItems.map((child, index) => (
+            <div key={child.key ?? `right-${index}`} className="min-w-0">
+              {/* Force the child card to use bento density layout */}
+              {cloneElement(child, { density: "bento" } as any)}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

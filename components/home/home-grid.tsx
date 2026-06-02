@@ -14,6 +14,7 @@ export async function HomeGrid() {
 
   return (
     <ProductGridShell
+      variant="home"
       sidebar={
         <BlackCard
           siteName={process.env.SITE_NAME || "Sainto"}

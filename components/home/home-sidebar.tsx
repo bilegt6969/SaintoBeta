@@ -53,7 +53,7 @@ export function HomeSidebar() {
       <div className="relative flex aspect-[4/3] w-full flex-col overflow-hidden rounded-2xl bg-black p-4 sm:p-5">
         <Link href="/" className="mb-4 inline-block" aria-label={siteName}>
           <Image
-            src="/frame69.svg"
+            src="/Lelogo.svg"
             alt={siteName}
             width={1666}
             height={360}

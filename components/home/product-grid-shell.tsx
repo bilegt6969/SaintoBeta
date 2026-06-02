@@ -10,18 +10,21 @@ export function ProductGridShell({
   sidebar: ReactNode;
   children: ReactNode;
   emptyMessage?: string;
+  variant?: "default" | "category" | "home";
 }) {
   const childArray = Children.toArray(children).filter(isValidElement);
   const hasChildren = childArray.length > 0;
-  const isCategoryBento = variant === "category";
+  const useBento = variant === "category" || variant === "home";
 
-  if (isCategoryBento) {
+  if (useBento) {
     return (
       <div className="mx-auto max-w-[1600px] px-4 py-6 md:px-8 lg:px-10 lg:py-10">
+        {/* Mobile: pinterest bento — hidden on lg+ */}
         <CategoryMobileBento sidebar={sidebar} emptyMessage={emptyMessage}>
           {children}
         </CategoryMobileBento>
 
+        {/* Desktop: original 3-col grid — hidden below lg */}
         <div className="hidden gap-x-6 gap-y-10 lg:grid lg:grid-cols-3">
           {sidebar}
           {hasChildren ? (

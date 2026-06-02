@@ -1,5 +1,5 @@
-import type { Image as CommerceImage } from "lib/commerce/types";
 import { cn } from "lib/cn";
+import type { Image as CommerceImage } from "lib/commerce/types";
 import type { NavLink } from "lib/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -112,7 +112,7 @@ function CardLogo({
   return (
     <Link href={logoHref} className={linkClass} aria-label={siteName}>
       <Image
-        src="/frame69.svg"
+        src="/Lelogo.svg"
         alt={siteName}
         width={1666}
         height={360}

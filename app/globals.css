@@ -60,82 +60,27 @@ button {
     --tw-ring-color: rgb(0 0 0 / 0.12);
   }
 
-  /* Category mobile bento */
+  /* ── Category mobile bento ─────────────────────────────── */
+
   .category-bento-mobile {
     --bento-gap: 0.75rem;
-    --bento-col: calc((100% - var(--bento-gap)) / 2);
-    --black-card-h: calc(var(--bento-col) * 3 / 4);
   }
 
-  /* Hero: black card left, featured product right (same row) */
-  .category-bento-hero {
-    display: grid;
-    width: 100%;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "sidebar feature";
-    column-gap: var(--bento-gap);
-    align-items: start;
-  }
-
+  /* Black card column layout container */
   .category-bento-sidebar {
-    grid-area: sidebar;
     min-width: 0;
   }
 
-  .category-bento-hero-feature {
-    grid-area: feature;
-    display: flex;
-    min-width: 0;
-    height: var(--black-card-h);
-    align-items: flex-start;
-    justify-content: center;
-  }
-
-  .category-bento-hero-feature .group {
-    width: 100%;
-    max-width: var(--black-card-h);
-  }
-
-  /* Hero: image only, square = card height */
-  .category-bento-hero-feature .group > a > *:not(:first-child),
-  .category-bento-hero-feature .group > div > *:not(:first-child) {
-    display: none;
-  }
-
-  .category-bento-hero-feature .category-bento-product-image {
-    width: 100%;
-    max-width: var(--black-card-h);
-    height: var(--black-card-h);
-    aspect-ratio: 1 / 1;
-    margin-inline: auto;
-  }
-
-  .category-bento-sidebar article {
-    width: 100%;
-  }
-
+  /* Force the black card inner div to 4:3 */
   .category-bento-sidebar article > div {
     width: 100%;
     aspect-ratio: 4 / 3;
   }
 
-  /* Rest: 2-col bento; row height = one column width (square tiles) */
-  .category-bento-rest {
-    grid-auto-flow: dense;
-    grid-auto-rows: var(--bento-col);
-  }
-
-  .category-bento-product-slot {
-    min-width: 0;
-  }
-
-  .category-bento-rest .category-bento-product-image {
+  /* Square product images */
+  .category-bento-product-image {
     width: 100%;
     aspect-ratio: 1 / 1;
-  }
-
-  .category-bento-rest > .row-span-2 .category-bento-product-image {
-    height: 100%;
   }
 }
 
