@@ -2,6 +2,7 @@ import type {
   BestFor,
   CategoryPage,
   Collection,
+  Hero,
   Image,
   KeyIngredientsSection,
   Menu,
@@ -144,6 +145,15 @@ type SanityPage = {
 
 type SanityMenu = {
   items?: { title: string; path: string }[];
+};
+
+type SanityHero = {
+  _id: string;
+  title: string;
+  desktopImage?: SanityImage;
+  mobileImage?: SanityImage;
+  enabled?: boolean;
+  sortOrder?: number;
 };
 
 function mapImage(image: SanityImage, fallbackAlt: string): Image {
@@ -428,6 +438,36 @@ export function mapSanityPage(doc: SanityPage): Page {
   };
 }
 
+function mapHeroImage(
+  image: SanityImage | undefined,
+  fallbackAlt: string,
+  width: number,
+  height: number,
+): Image {
+  if (!image?.asset?._ref) {
+    return { url: "", altText: fallbackAlt, width, height };
+  }
+
+  const url = urlForImage(image).width(width).height(height).fit("crop").url();
+  return {
+    url,
+    altText: image.alt || fallbackAlt,
+    width,
+    height,
+  };
+}
+
+export function mapSanityHero(doc: SanityHero): Hero {
+  return {
+    id: doc._id,
+    title: doc.title,
+    desktopImage: mapHeroImage(doc.desktopImage, doc.title, 1920, 1080),
+    mobileImage: mapHeroImage(doc.mobileImage, doc.title, 1080, 1920),
+    enabled: doc.enabled ?? true,
+    sortOrder: doc.sortOrder ?? 0,
+  };
+}
+
 export function mapSanityMenu(doc: SanityMenu): Menu[] {
   return (
     doc.items?.map((item) => ({
@@ -440,6 +480,7 @@ export function mapSanityMenu(doc: SanityMenu): Menu[] {
 export type {
   SanityCategoryPage,
   SanityCollection,
+  SanityHero,
   SanityMenu,
   SanityPage,
   SanityProduct,

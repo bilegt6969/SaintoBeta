@@ -157,6 +157,15 @@ export type Menu = {
   path: string;
 };
 
+export type Hero = {
+  id: string;
+  title: string;
+  desktopImage: Image;
+  mobileImage: Image;
+  enabled: boolean;
+  sortOrder: number;
+};
+
 export type Page = {
   id: string;
   title: string;
