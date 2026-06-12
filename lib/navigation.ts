@@ -23,6 +23,7 @@ export function categoryPagesToNavLinks(
 export function resolveCategoryNavLinks(
   categoryPages: CategoryPage[],
 ): NavLink[] {
+  // Use realtime data from Sanity, fallback to static if empty
   const fromSanity = categoryPagesToNavLinks(categoryPages);
   return fromSanity.length > 0 ? fromSanity : [...NAV_CATEGORIES];
 }

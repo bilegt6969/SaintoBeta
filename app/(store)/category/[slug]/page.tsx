@@ -1,12 +1,7 @@
 import { CategoryGrid } from "components/home/category-grid";
-import { getCategoryPage, getCategoryPages } from "lib/commerce";
+import { getCategoryPage } from "lib/commerce";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-export async function generateStaticParams() {
-  const pages = await getCategoryPages();
-  return pages.map((page) => ({ slug: page.handle }));
-}
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;

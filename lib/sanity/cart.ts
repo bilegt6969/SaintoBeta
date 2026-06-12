@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { sanityClient } from "./client";
 import { mapSanityProduct, type SanityProduct } from "./mappers";
 
-const CART_COOKIE = "cart";
+const CART_COOKIE = "cartId";
 
 const productByVariantQuery = `*[_type == "product" && _id == $variantId][0]{
   _id,

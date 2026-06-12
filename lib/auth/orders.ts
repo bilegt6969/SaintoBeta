@@ -1,9 +1,9 @@
 import type { Cart } from "lib/commerce/types";
 
-export const SHIPPING_FEE = 5000;
+export const SHIPPING_FEE = 9000;
 
 export function generateTxCode(): string {
-  const suffix = crypto.randomInt(100000, 1000000);
+  const suffix = Math.floor(Math.random() * 900000) + 100000;
   return `SNT-${suffix}`;
 }
 

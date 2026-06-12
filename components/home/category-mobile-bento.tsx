@@ -15,7 +15,7 @@ export function CategoryMobileBento({
   ) as ReactElement[];
 
   const bentoSidebar = isValidElement(sidebar)
-    ? cloneElement(sidebar as ReactElement, { variant: "bento" })
+    ? cloneElement(sidebar as ReactElement, { variant: "bento" } as any)
     : sidebar;
 
   if (items.length === 0) {
@@ -29,32 +29,16 @@ export function CategoryMobileBento({
     );
   }
 
-  const leftColumnItems = items.filter((_, idx) => idx % 2 === 1);
-  const rightColumnItems = items.filter((_, idx) => idx % 2 === 0);
-
   return (
     <div className="category-bento-mobile w-full lg:hidden">
-      <div className="flex gap-[var(--bento-gap)] items-start">
-        {/* Left Column */}
-        <div className="flex flex-1 flex-col gap-[var(--bento-gap)] min-w-0">
-          <div className="category-bento-sidebar">{bentoSidebar}</div>
-          {leftColumnItems.map((child, index) => (
-            <div key={child.key ?? `left-${index}`} className="min-w-0">
-              {/* Force the child card to use bento density layout */}
-              {cloneElement(child, { density: "bento" } as any)}
-            </div>
-          ))}
-        </div>
-
-        {/* Right Column */}
-        <div className="flex flex-1 flex-col gap-[var(--bento-gap)] min-w-0">
-          {rightColumnItems.map((child, index) => (
-            <div key={child.key ?? `right-${index}`} className="min-w-0">
-              {/* Force the child card to use bento density layout */}
-              {cloneElement(child, { density: "bento" } as any)}
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-col gap-[var(--bento-gap)]">
+        <div className="category-bento-sidebar">{bentoSidebar}</div>
+        {items.map((child, index) => (
+          <div key={child.key ?? `item-${index}`} className="min-w-0">
+            {/* Force the child card to use bento density layout */}
+            {cloneElement(child, { density: "bento" } as any)}
+          </div>
+        ))}
       </div>
     </div>
   );

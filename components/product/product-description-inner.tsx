@@ -7,11 +7,11 @@ import { getProductBrand, getProductCategory } from "lib/product-meta";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
-    JSXElementConstructor,
-    Key,
-    ReactElement,
-    ReactNode,
-    ReactPortal,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
 } from "react";
 import { VariantSelector } from "./variant-selector";
 
@@ -41,8 +41,8 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8 pb-8 text-neutral-950 px-4 sm:px-0">
-      {/* Navigation Line */}
-      <div className="flex items-center justify-between">
+      {/* Navigation Line - Hidden on mobile, shown on desktop */}
+      <div className="hidden lg:flex items-center justify-between">
         <Link
           href="/"
           className="group inline-flex items-center gap-2 text-sm font-medium text-neutral-400 transition-colors hover:text-neutral-900"
@@ -208,15 +208,8 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
           <AddToCart
             product={product}
             variantId={selectedVariant?.id || product.variants[0]?.id}
-            className="w-full bg-neutral-950 text-white rounded-full py-3.5 px-8 text-sm font-medium tracking-tight hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1 shadow-sm"
           />
         </div>
-        <button
-          type="button"
-          className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors py-2 px-4 rounded-full border border-neutral-200 hover:border-neutral-300"
-        >
-          Download spec sheet
-        </button>
       </div>
     </div>
   );

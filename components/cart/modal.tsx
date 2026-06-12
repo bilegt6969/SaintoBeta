@@ -28,9 +28,14 @@ export default function CartModal({
 }) {
   const { cart, updateCartItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const quantityRef = useRef(cart?.totalQuantity);
   const openCart = () => setIsOpen(true);
-  const closeCart = () => setIsOpen(false);
+  const closeCart = () => {
+    setIsOpen(false);
+    setIsClosing(true);
+    setTimeout(() => setIsClosing(false), 150);
+  };
 
   useEffect(() => {
     if (!cart) {
@@ -94,7 +99,9 @@ export default function CartModal({
             leaveFrom="translate-x-0"
             leaveTo="translate-x-full"
           >
-            <Dialog.Panel className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-gray-100 bg-white/90 p-8 text-[#1d1d1f] backdrop-blur-2xl md:w-[420px] shadow-[0_0_50px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-black/90 dark:text-white">
+            <Dialog.Panel
+              className={`t-modal fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-gray-100 bg-white/90 p-8 text-[#1d1d1f] backdrop-blur-2xl md:w-[420px] shadow-[0_0_50px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-black/90 dark:text-white ${isOpen ? "is-open" : ""} ${isClosing ? "is-closing" : ""}`}
+            >
               {/* Drawer Header */}
               <div className="flex items-center justify-between pb-6 border-b border-gray-100 dark:border-neutral-800">
                 <div>
@@ -222,8 +229,10 @@ export default function CartModal({
                                     optimisticUpdate={updateCartItem}
                                   />
                                   <p className="w-7 text-center select-none">
-                                    <span className="text-xs font-semibold tabular-nums text-[#1d1d1f] dark:text-neutral-200">
-                                      {item.quantity}
+                                    <span className="t-digit-group is-animating text-xs font-semibold tabular-nums text-[#1d1d1f] dark:text-neutral-200">
+                                      <span className="t-digit">
+                                        {item.quantity}
+                                      </span>
                                     </span>
                                   </p>
                                   <EditItemQuantityButton

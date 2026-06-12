@@ -1,6 +1,7 @@
 import { categoryPage } from "./categoryPage";
 import { collection } from "./collection";
 import { hero } from "./hero";
+import { homeConfig } from "./homeConfig";
 import { menu } from "./menu";
 import { bestForItem } from "./objects/bestForItem";
 import { keyIngredient } from "./objects/keyIngredient";
@@ -22,4 +23,5 @@ export const schemaTypes = [
   page,
   menu,
   hero,
+  homeConfig,
 ];

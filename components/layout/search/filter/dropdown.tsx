@@ -12,6 +12,7 @@ export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
   const searchParams = useSearchParams();
   const [active, setActive] = useState("");
   const [openSelect, setOpenSelect] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,8 +52,11 @@ export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
         <div
           onClick={() => {
             setOpenSelect(false);
+            setIsClosing(true);
+            setTimeout(() => setIsClosing(false), 150);
           }}
-          className="absolute z-40 w-full rounded-b-md bg-white p-4 shadow-md dark:bg-black"
+          className={`t-dropdown absolute z-40 w-full rounded-b-md bg-white p-4 shadow-md dark:bg-black ${openSelect ? "is-open" : ""} ${isClosing ? "is-closing" : ""}`}
+          data-origin="top-center"
         >
           {list.map((item: ListItem, i) => (
             <FilterItem key={i} item={item} />

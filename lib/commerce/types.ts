@@ -176,3 +176,24 @@ export type Page = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type HomeConfig = {
+  id: string;
+  featuredProducts: Product[];
+  categorySections: {
+    category: CategoryPage;
+    enabled: boolean;
+    sortOrder: number;
+  }[];
+  blackCardDescription?: string;
+};
+
+export type SearchProduct = {
+  id: string;
+  title: string;
+  slug?: string;
+  pictureUrl?: string;
+  localizedRetailPriceCents?: {
+    amountCents: number;
+  };
+};

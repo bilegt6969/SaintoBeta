@@ -6,7 +6,11 @@ import { StoreLayoutClient } from "./store-layout-client";
 
 const siteName = "Sainto";
 
-export default async function StoreLayout({ children }: { children: ReactNode }) {
+export default async function StoreLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const categoryPages = await getCategoryPages();
   const categories = resolveCategoryNavLinks(categoryPages);
 
@@ -20,7 +24,7 @@ export default async function StoreLayout({ children }: { children: ReactNode })
       </div>
       {/* Footer visibility depends on pathname — handled in client wrapper */}
       <Suspense fallback={null}>
-        <StoreLayoutClient siteName={siteName} />
+        <StoreLayoutClient siteName={siteName} categories={categories} />
       </Suspense>
     </>
   );

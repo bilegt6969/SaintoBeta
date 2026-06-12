@@ -1,23 +1,23 @@
 import type {
-  BestFor,
-  CategoryPage,
-  Collection,
-  Hero,
-  Image,
-  KeyIngredientsSection,
-  Menu,
-  Page,
-  Product,
-  ProductHighlight,
-  ProductOption,
-  ProductVariant,
-  PurchaseBundleOption,
-  PurchaseBundles,
+    BestFor,
+    CategoryPage,
+    Collection,
+    Hero,
+    Image,
+    KeyIngredientsSection,
+    Menu,
+    Page,
+    Product,
+    ProductHighlight,
+    ProductOption,
+    ProductVariant,
+    PurchaseBundleOption,
+    PurchaseBundles,
 } from "lib/commerce/types";
 import {
-  DEFAULT_CURRENCY_CODE,
-  DEFAULT_OPTION,
-  HIDDEN_PRODUCT_TAG,
+    DEFAULT_CURRENCY_CODE,
+    DEFAULT_OPTION,
+    HIDDEN_PRODUCT_TAG,
 } from "lib/constants";
 import { urlForImage } from "./image";
 
@@ -154,6 +154,16 @@ type SanityHero = {
   mobileImage?: SanityImage;
   enabled?: boolean;
   sortOrder?: number;
+};
+
+type SanityHomeConfig = {
+  _id: string;
+  featuredProducts?: SanityProduct[];
+  categorySections?: {
+    category?: SanityCategoryPage;
+    enabled?: boolean;
+    sortOrder?: number;
+  }[];
 };
 
 function mapImage(image: SanityImage, fallbackAlt: string): Image {
@@ -478,11 +488,11 @@ export function mapSanityMenu(doc: SanityMenu): Menu[] {
 }
 
 export type {
-  SanityCategoryPage,
-  SanityCollection,
-  SanityHero,
-  SanityMenu,
-  SanityPage,
-  SanityProduct
+    SanityCategoryPage,
+    SanityCollection,
+    SanityHero,
+    SanityMenu,
+    SanityPage,
+    SanityProduct
 };
 

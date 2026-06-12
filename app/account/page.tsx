@@ -1,6 +1,6 @@
 "use client";
 
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
 import { auth } from "lib/firebase";
 import Image from "next/image";
@@ -39,14 +39,22 @@ interface Order {
 }
 
 // --- SWR Fetcher ---
-const fetcher = (url: string): Promise<Order[]> =>
-  fetch(url).then((res) => {
-    if (res.status === 401) {
-      throw new Error("UNAUTHORIZED");
-    }
-    if (!res.ok) throw new Error("Failed to fetch orders");
-    return res.json();
+const fetcher = async (url: string): Promise<Order[]> => {
+  if (!auth?.currentUser) {
+    throw new Error("UNAUTHORIZED");
+  }
+  const idToken = await auth.currentUser.getIdToken();
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
   });
+  if (res.status === 401) {
+    throw new Error("UNAUTHORIZED");
+  }
+  if (!res.ok) throw new Error("Failed to fetch orders");
+  return res.json();
+};
 
 const PIPELINE_STAGES: { key: OrderStatus; label: string }[] = [
   { key: "payment_processing", label: "Payment Processing" },
@@ -64,15 +72,30 @@ const springTransition = {
 export default function AccountPage() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userPhotoURL, setUserPhotoURL] = useState<string | null>(null);
+  const [userCreatedDate, setUserCreatedDate] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
+    if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.replace("/sign-in?next=/account");
         return;
       }
       setUserEmail(user.email);
+      setUserName(user.displayName);
+      setUserPhotoURL(user.photoURL);
+      if (user.metadata?.creationTime) {
+        const createdDate = new Date(user.metadata.creationTime);
+        setUserCreatedDate(
+          createdDate.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          }),
+        );
+      }
       setAuthReady(true);
     });
 
@@ -110,8 +133,19 @@ export default function AccountPage() {
     };
   };
 
+  const handleLogout = async () => {
+    try {
+      if (auth) {
+        await signOut(auth);
+      }
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#f5f5f7] text-[#1d1d1f] font-sans pb-24 selection:bg-black selection:text-white flex flex-col items-center">
+    <div className="h-screen w-full bg-[#f5f5f7] text-[#1d1d1f] font-sans selection:bg-black selection:text-white flex flex-col items-center overflow-hidden">
       {/* Top Navigation - Glassmorphism */}
       <div className="sticky top-0 z-50 w-full bg-[#f5f5f7]/70 backdrop-blur-xl border-b border-gray-200/50 flex justify-center">
         <div className="w-full max-w-3xl px-6 py-4 flex justify-between items-center">
@@ -135,17 +169,17 @@ export default function AccountPage() {
           </button>
 
           {/* Logo Brand Frame */}
-          <div className="flex items-center h-5">
+          <Link href="/" className="flex items-center h-5">
             <img
               src="/Lelogo.svg"
               alt="Sainto Logo"
               className="h-full w-auto object-contain invert"
             />
-          </div>
+          </Link>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl px-6 pt-12">
+      <div className="w-full max-w-3xl px-6 pt-12 flex-1 overflow-y-auto">
         {/* Header */}
         <motion.header
           initial={{ opacity: 0, y: 10 }}
@@ -158,6 +192,49 @@ export default function AccountPage() {
           </h1>
           <p className="text-[#86868b] text-sm">{userEmail ?? "Loading..."}</p>
         </motion.header>
+
+        {/* Profile Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springTransition, delay: 0.1 }}
+          className="bg-white rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden mb-8"
+        >
+          <div className="p-7 flex items-center gap-5">
+            {userPhotoURL ? (
+              <div className="w-16 h-16 rounded-full overflow-hidden">
+                <img
+                  src={userPhotoURL}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#007AFF] to-[#5856D6] flex items-center justify-center text-white text-2xl font-semibold">
+                {userName?.charAt(0).toUpperCase() ||
+                  userEmail?.charAt(0).toUpperCase() ||
+                  "U"}
+              </div>
+            )}
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-[#1d1d1f]">
+                {userName || "User"}
+              </h2>
+              <p className="text-sm text-[#86868b]">{userEmail}</p>
+              {userCreatedDate && (
+                <p className="text-xs text-[#86868b] mt-1">
+                  Member since {userCreatedDate}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+            >
+              Log out
+            </button>
+          </div>
+        </motion.div>
 
         {/* Data Grid */}
         <div className="flex flex-col gap-6">
@@ -193,10 +270,30 @@ export default function AccountPage() {
               </motion.div>
             )}
 
+            {/* No orders state */}
+            {!isLoading && !error && (!orders || orders.length === 0) && (
+              <motion.div
+                key="no-orders"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="w-full py-24 flex flex-col items-center gap-3 text-center"
+              >
+                <p className="text-sm font-medium text-[#1d1d1f]">
+                  No orders yet
+                </p>
+                <p className="text-xs text-[#86868b]">
+                  When you place an order, it will appear here.
+                </p>
+              </motion.div>
+            )}
+
             {/* Orders list */}
             {!isLoading &&
               !error &&
-              orders?.map((order, index) => {
+              orders &&
+              orders.length > 0 &&
+              orders.map((order, index) => {
                 const { date, time } = formatDate(order.timestamp);
                 const currentStageIndex = PIPELINE_STAGES.findIndex(
                   (s) => s.key === order.status,

@@ -45,12 +45,12 @@ export const categoryPage = defineType({
     }),
     defineField({
       name: "featuredProduct",
-      title: "Category face (homepage)",
+      title: "Category face (legacy)",
       type: "reference",
       group: "home",
       to: [{ type: "product" }],
       description:
-        "The product card shown on the home page for this category. Select any product - you can assign products to this category after creating the page.",
+        "Optional. The homepage grid now uses the category logo and links to this collection — products are no longer shown on the home grid.",
     }),
     defineField({
       name: "showOnHome",

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function PrivacyPolicy() {
   // Apple-style easing curve (Ease Out Expo)
-  const ease = [0.16, 1, 0.3, 1];
+  const ease = [0.16, 1, 0.3, 1] as const;
 
   const containerVariants = {
     hidden: { opacity: 0 },

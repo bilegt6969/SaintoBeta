@@ -18,6 +18,7 @@ export function SignInButton({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) return;
     // Listen to Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -52,12 +53,15 @@ export function SignInButton({
         )}
       >
         {user.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt={user.displayName || "User profile"}
-            className="h-full w-full object-cover"
-            referrerPolicy="no-referrer" // Fixes Google image loading restrictions
-          />
+          <div className="relative h-full w-full">
+            <img
+              src={user.photoURL}
+              alt={user.displayName || "User profile"}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "center 60%" }}
+              referrerPolicy="no-referrer"
+            />
+          </div>
         ) : (
           <User className="h-4 w-4 text-neutral-600" strokeWidth={2} />
         )}

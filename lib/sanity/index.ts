@@ -1,41 +1,42 @@
 import type {
-  Cart,
-  CategoryPage,
-  Collection,
-  Hero,
-  Menu,
-  Page,
-  Product,
+    Cart,
+    CategoryPage,
+    Collection,
+    Hero,
+    HomeConfig,
+    Menu,
+    Page,
+    Product,
 } from "lib/commerce/types";
 import { HIDDEN_PRODUCT_TAG, TAGS } from "lib/constants";
 import {
-  cacheLife, // 🌟 Stabilized in Next.js 16
-  cacheTag, // 🌟 Stabilized in Next.js 16
-  revalidateTag,
+    cacheLife, // 🌟 Stabilized in Next.js 16
+    cacheTag, // 🌟 Stabilized in Next.js 16
+    revalidateTag,
 } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { isSanityConfigured } from "sanity/env";
 import {
-  addToSanityCart,
-  createSanityCart,
-  getSanityCart,
-  removeFromSanityCart,
-  updateSanityCart,
+    addToSanityCart,
+    createSanityCart,
+    getSanityCart,
+    removeFromSanityCart,
+    updateSanityCart,
 } from "./cart";
 import { sanityClient } from "./client";
 import {
-  mapSanityCategoryPage,
-  mapSanityCollection,
-  mapSanityHero,
-  mapSanityMenu,
-  mapSanityPage,
-  mapSanityProduct,
-  type SanityCategoryPage,
-  type SanityCollection,
-  type SanityHero,
-  type SanityMenu,
-  type SanityPage,
-  type SanityProduct,
+    mapSanityCategoryPage,
+    mapSanityCollection,
+    mapSanityHero,
+    mapSanityMenu,
+    mapSanityPage,
+    mapSanityProduct,
+    type SanityCategoryPage,
+    type SanityCollection,
+    type SanityHero,
+    type SanityMenu,
+    type SanityPage,
+    type SanityProduct,
 } from "./mappers";
 
 const productFields = `
@@ -144,6 +145,19 @@ const categoryPageByHandleQuery = `*[_type == "categoryPage" && slug.current == 
 
 const productsByCategoryHandleQuery = `*[_type == "product" && category->slug.current == $handle] | order(_updatedAt desc) {${productFields}}`;
 
+const homeConfigFields = `
+  _id,
+  "featuredProducts": featuredProducts[]->{${productFields}},
+  "categorySections": categorySections[]{
+    "category": category->{${categoryPageFields}},
+    enabled,
+    sortOrder
+  },
+  blackCardDescription
+`;
+
+const homeConfigQuery = `*[_type == "homeConfig"][0]{${homeConfigFields}}`;
+
 function sortProducts(
   products: Product[],
   sortKey?: string,
@@ -221,7 +235,7 @@ export async function getCart(): Promise<Cart | undefined> {
 export async function getCategoryPages(): Promise<CategoryPage[]> {
   "use cache";
   cacheTag(TAGS.categoryPages, TAGS.products);
-  cacheLife("days");
+  cacheLife("minutes"); // Changed from days to minutes for faster updates
 
   if (!isSanityConfigured()) {
     return [];
@@ -266,7 +280,7 @@ export async function getCategoryPage(
 
 export async function getCategoryPagesForHome(): Promise<CategoryPage[]> {
   const pages = await getCategoryPages();
-  return pages.filter((page) => page.showOnHome && page.featuredProduct);
+  return pages.filter((page) => page.showOnHome);
 }
 
 export async function getCollection(
@@ -403,6 +417,10 @@ export async function getMenu(handle: string): Promise<Menu[]> {
 }
 
 export async function getPage(handle: string): Promise<Page> {
+  "use cache";
+  cacheTag(TAGS.categoryPages);
+  cacheLife("days");
+
   if (!isSanityConfigured()) {
     throw new Error("Sanity is not configured");
   }
@@ -510,6 +528,68 @@ export async function getProducts({
   return sortProducts(filterProducts(products, query), sortKey, reverse);
 }
 
+export async function getHomeConfig(): Promise<HomeConfig | undefined> {
+  "use cache";
+  cacheTag(TAGS.homeConfig, TAGS.products, TAGS.categoryPages);
+  cacheLife("days");
+
+  if (!isSanityConfigured()) {
+    return undefined;
+  }
+
+  const doc = await sanityClient.fetch<any | null>(homeConfigQuery);
+
+  if (!doc) {
+    return undefined;
+  }
+
+  // Fetch products for each category section
+  const categorySectionsWithProducts = await Promise.all(
+    (doc.categorySections || [])
+      .filter((section: any) => section.enabled && section.category)
+      .map(async (section: any) => {
+        if (!section.category) return section;
+
+        const productDocs = await sanityClient.fetch<SanityProduct[]>(
+          productsByCategoryHandleQuery,
+          { handle: section.category.slug.current },
+        );
+
+        const products = productDocs
+          .map((product) => mapSanityProduct(product))
+          .filter((product): product is Product => Boolean(product))
+          .slice(0, 5);
+
+        return {
+          ...section,
+          category: mapSanityCategoryPage(section.category, products),
+        };
+      }),
+  );
+
+  const featuredProducts =
+    doc.featuredProducts
+      ?.map((product: SanityProduct) => mapSanityProduct(product))
+      .filter((product: Product | undefined): product is Product =>
+        Boolean(product),
+      )
+      .slice(0, 5) ?? [];
+
+  return {
+    id: doc._id,
+    featuredProducts,
+    categorySections: categorySectionsWithProducts
+      .filter((section: any) => section.enabled)
+      .map((section: any) => ({
+        category: section.category,
+        enabled: section.enabled,
+        sortOrder: section.sortOrder,
+      }))
+      .sort((a: any, b: any) => a.sortOrder - b.sortOrder),
+    blackCardDescription: doc.blackCardDescription,
+  };
+}
+
 export async function revalidate(req: NextRequest): Promise<NextResponse> {
   const authHeader = req.headers.get("authorization");
   const headerSecret = req.headers.get("x-revalidation-secret");
@@ -529,6 +609,7 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
   revalidateTag(TAGS.categoryPages, "days");
   revalidateTag(TAGS.products, "days");
   revalidateTag(TAGS.hero, "days");
+  revalidateTag(TAGS.homeConfig, "days");
 
   return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
 }

@@ -2,18 +2,39 @@
 
 export default function Error({ reset }: { reset: () => void }) {
   return (
-    <div className="mx-auto my-4 flex max-w-xl flex-col rounded-lg border border-neutral-200 bg-white p-8 md:p-12 dark:border-neutral-800 dark:bg-black">
-      <h2 className="text-xl font-bold">Oh no!</h2>
-      <p className="my-2">
-        There was an issue with our storefront. This could be a temporary issue,
-        please try your action again.
-      </p>
-      <button
-        className="mx-auto mt-4 flex w-full items-center justify-center rounded-full bg-blue-600 p-4 tracking-wide text-white hover:opacity-90"
-        onClick={() => reset()}
-      >
-        Try Again
-      </button>
+    <div className="mx-auto max-w-[1600px] px-4 py-16 md:px-8 md:py-24 lg:px-10">
+      <div className="mx-auto max-w-md rounded-3xl border border-neutral-200 bg-neutral-50 px-8 py-12 text-center sm:max-w-lg sm:px-10 sm:py-14">
+        <p
+          className="text-[5.5rem] font-semibold leading-none tracking-tighter text-neutral-200 sm:text-[6.5rem]"
+          aria-hidden
+        >
+          !
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900">
+          Oh no!
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+          There was an issue with our storefront. This could be a temporary
+          issue, please try your action again.
+        </p>
+        <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
+          <button
+            onClick={() => reset()}
+            className="inline-flex items-center justify-center rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+          >
+            Try Again
+          </button>
+        </div>
+        <p className="mt-8 text-xs text-neutral-400">
+          Need help?{" "}
+          <a
+            href="/"
+            className="text-neutral-600 underline decoration-neutral-300 underline-offset-2 transition-colors hover:text-neutral-900 hover:decoration-neutral-500"
+          >
+            Return to Sainto
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

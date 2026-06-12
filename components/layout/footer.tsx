@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     // Outer container with the large background text cut off at the bottom
-    <footer className="relative w-full overflow-hidden bg-white py-24 flex justify-center">
+    <footer className="relative w-full overflow-hidden bg-[#f5f5f5] py-24 flex justify-center">
       {/* Massive Background Text */}
       <div className="absolute -bottom-8 left-0 right-0 z-0 flex justify-center text-center">
         <span className="text-[12rem] font-bold leading-none text-gray-200/50 tracking-tighter select-none">
@@ -12,7 +12,7 @@ export default function Footer() {
       </div>
 
       {/* "Sunken" Floating Card Container (Frame 33) */}
-      <div className="relative z-10 w-full max-w-[1000px] rounded-[2.5rem] bg-gray-50/80 backdrop-blur-xl px-12 py-14 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02),0_4px_24px_rgba(0,0,0,0.02)]">
+      <div className="relative z-10 w-full max-w-[1000px] rounded-[2.5rem] bg-white backdrop-blur-xl px-12 py-14 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02),0_4px_24px_rgba(0,0,0,0.02)]">
         {/* Top Section: Grid Layout */}
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* Logo & Description */}

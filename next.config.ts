@@ -2,9 +2,11 @@
 const nextConfig = {
   cacheComponents: true,
 
-  experimental: {
-    inlineCss: true,
-  },
+  allowedDevOrigins: ["172.20.10.6"],
+
+  // experimental: {
+  //   inlineCss: true, // Disabled - might cause issues with Turbopack
+  // },
 
   turbopack: {
     root: import.meta.dirname,

@@ -22,10 +22,10 @@ export function GridTileImage({
     <div
       className={clsx(
         // Changed rounded-md to rounded-3xl and removed the static bg/hover states here
-        "group flex h-full w-full items-center justify-center overflow-hidden rounded-3xl",
+        "group flex h-full w-full items-center justify-center overflow-hidden rounded",
         {
           relative: label,
-          "border-2 border-neutral-300 p-1 bg-black": active,
+          "border-neutral-300 p-1 bg-neutral-200/40": active,
         },
       )}
     >

@@ -24,14 +24,15 @@ export const hero = defineType({
     }),
     defineField({
       name: "mobileImage",
-      title: "Mobile Image (1080x1920)",
+      title: "Mobile Image (1080x1080)", // Updated title
       type: "image",
       options: {
         hotspot: true,
         accept: "image/*",
       },
       validation: (rule) => rule.required(),
-      description: "Recommended size: 1080x1920 for mobile screens (vertical orientation)",
+      description:
+        "Recommended size: 1080x1080 for mobile screens (square orientation)", // Updated description
     }),
     defineField({
       name: "enabled",

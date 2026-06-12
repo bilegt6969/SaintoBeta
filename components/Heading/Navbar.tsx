@@ -7,8 +7,12 @@ import { useMediaQuery } from "hooks/use-media-query";
 import { cn } from "lib/cn";
 import type { NavLink } from "lib/navigation";
 import { Menu as MenuIcon, Search, X } from "lucide-react";
+// @ts-ignore - metal-fx types not resolving correctly
+// @ts-ignore - border-beam types may not resolve correctly
+import { BorderBeam } from "border-beam";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Menu from "./menu";
 import MobileMenu from "./mobile-menu";
@@ -24,13 +28,14 @@ export default function Navbar({
   siteName: string;
   categories: NavLink[];
 }) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false); // Added scroll state
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
-  const isMdScreen = useMediaQuery("(min-width: 768px)");
   const isMobile = !isLargeScreen;
 
   // Mount timer
@@ -45,7 +50,6 @@ export default function Navbar({
       setIsScrolled(window.scrollY > 20);
     };
 
-    // Check initial scroll position on mount
     handleScroll();
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -58,13 +62,23 @@ export default function Navbar({
 
   useEffect(() => {
     const isMobileMenuOpen = isOpen && isMobile;
-    const isMobileSearchOpen = isSearchOpen && !isMdScreen;
-    const shouldLockScroll = isMobileMenuOpen || isMobileSearchOpen;
-    document.body.style.overflow = shouldLockScroll ? "hidden" : "";
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen, isMobile, isSearchOpen, isMdScreen]);
+  }, [isOpen, isMobile]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (isSearchOpen) setIsSearchOpen(false);
+        else setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [isSearchOpen]);
 
   const navbarVariants: Variants = {
     hidden: { y: -50, opacity: 0 },
@@ -83,6 +97,16 @@ export default function Navbar({
 
   return (
     <div className="relative w-full">
+      {/* The Global Backdrop Blur 
+        Softened the background tint and increased the blur slightly for a smoother effect 
+      */}
+      <div
+        className={cn(
+          "pointer-events-none fixed inset-0 z-[95] bg-black/[0.02] backdrop-blur-[8px] transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          isDesktopMenuOpen ? "opacity-100" : "opacity-0",
+        )}
+      />
+
       <div className="pointer-events-none fixed inset-x-0 top-0 z-[99] h-[88px]" />
 
       {/* Top scroll blur (mobile + desktop) */}
@@ -116,8 +140,12 @@ export default function Navbar({
                 <Link
                   href="/"
                   prefetch
-                  className="island-inset flex h-8.5 shrink-0 items-center rounded-full bg-white px-3 transition-opacity hover:opacity-80 sm:px-2.5"
+                  className="island-inset relative flex h-8 shrink-0 items-center rounded-full bg-white px-3 transition-opacity hover:opacity-80 sm:px-2.5"
                   aria-label={siteName}
+                  style={{
+                    boxShadow:
+                      "inset 0 1px 2px rgba(0,0,0,0.08), inset 0 -1px 2px rgba(0,0,0,0.04)",
+                  }}
                 >
                   <Image
                     src="/Lelogo.svg"
@@ -128,32 +156,52 @@ export default function Navbar({
                     priority
                   />
                 </Link>
-                <Menu categories={categories} />
+                <Menu
+                  categories={categories}
+                  onOpenChange={setIsDesktopMenuOpen}
+                />
               </div>
               <div className="flex items-center gap-1 sm:gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setIsSearchOpen((prev) => !prev)}
-                  className="island-inset flex h-9 items-center gap-1.5 rounded-full bg-white px-3 text-[13px] font-medium text-neutral-800 transition-opacity hover:opacity-80 sm:px-3.5 sm:text-sm"
-                  aria-label={isSearchOpen ? "Close search" : "Search"}
-                  aria-expanded={isSearchOpen}
-                >
-                  <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
-                  <span className="hidden min-[440px]:inline tracking-tight">
-                    хайх
-                  </span>
-                </button>
+                <div className="relative">
+                  <BorderBeam
+                    size="md"
+                    colorVariant="mono"
+                    className="rounded-full"
+                  >
+                    <div className="island-inset flex h-8 items-center gap-1.5 rounded-full bg-white px-3 text-[13px] font-medium text-neutral-800 transition-opacity hover:opacity-80 sm:px-3.5 sm:text-sm">
+                      <button
+                        type="button"
+                        onClick={() => setIsSearchOpen(true)}
+                        className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0 text-inherit"
+                        aria-label="Search"
+                      >
+                        <Search className="h-4 w-4 shrink-0" strokeWidth={2} />
+                        <span className="hidden min-[440px]:inline tracking-tight">
+                          Search
+                        </span>
+                      </button>
+                    </div>
+                  </BorderBeam>
+                </div>
 
                 <div className="text-neutral-800 [&_button]:text-neutral-800">
                   <CartModal cartButtonVariant="island" />
                 </div>
 
-                <SignInButton className="hidden lg:inline-flex" />
+                <div className="relative flex items-center">
+                  <BorderBeam
+                    size="line"
+                    colorVariant="mono"
+                    className="rounded-full hidden lg:inline-flex"
+                  >
+                    <SignInButton />
+                  </BorderBeam>
+                </div>
 
                 <button
                   type="button"
                   onClick={() => setIsOpen((prev) => !prev)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-black/5 lg:hidden"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-black/5 lg:hidden"
                   aria-label={isOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isOpen}
                 >

@@ -4,9 +4,9 @@ import Price from "components/price";
 import { cn } from "lib/cn";
 import type { Product } from "lib/commerce";
 import {
-  getProductBrand,
-  getProductCategory,
-  isStaffPick,
+    getProductBrand,
+    getProductCategory,
+    isStaffPick,
 } from "lib/product-meta";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,7 +66,7 @@ export function HomeProductCard({
   const imageBlock = (
     <div
       className={cn(
-        "category-bento-product-image relative w-full overflow-hidden rounded-2xl bg-[#f3f3f3]",
+        "category-bento-product-image t-resize relative w-full overflow-hidden rounded-2xl bg-white",
         !isCompact && "aspect-square",
         isCompact && "aspect-square max-lg:rounded-xl",
         isBento && "aspect-square rounded-xl",
@@ -81,9 +81,9 @@ export function HomeProductCard({
           sizes={imageSizes}
           priority={priority}
           className={cn(
-            "object-contain p-6",
-            isCompact && "max-lg:object-cover max-lg:p-2",
-            isBento && "object-cover p-4",
+            "object-contain p-3 pb-16",
+            isCompact && "max-lg:object-cover max-lg:p-2 max-lg:pb-20",
+            isBento && "object-cover p-4 pb-20",
             !isOutOfStock &&
               "transition duration-500 ease-out group-hover:scale-[1.03]",
           )}
@@ -101,76 +101,54 @@ export function HomeProductCard({
       ) : null}
       {staffPick ? <StaffPickBadge compact={isCompact || isBento} /> : null}
 
-      {/* Bottom white gradient fade + centered category label (mobile only) */}
+      {/* Product info overlay */}
       <div
         className={cn(
-          "pointer-events-none absolute bottom-0 left-0 right-0 z-20 flex items-end justify-center bg-gradient-to-t from-[#ececec] to-transparent lg:hidden",
-          "px-3 pb-4 pt-16",
-          isCompact && "max-lg:px-2 max-lg:pb-2.5 max-lg:pt-10",
-          isBento && "px-2 pb-3 pt-12",
+          "absolute bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm p-4",
+          isCompact && "max-lg:p-2.5",
+          isBento && "p-3",
         )}
       >
         <p
           className={cn(
-            "text-center text-sm font-medium leading-snug text-neutral-500",
+            "text-sm text-neutral-400",
             isCompact && "max-lg:text-[10px]",
-            isBento && "text-xs",
           )}
         >
+          {brand}
+          <span className="mx-1 text-neutral-300 max-lg:mx-0.5">·</span>
           {category}
         </p>
+        <div
+          className={cn(
+            "flex items-start justify-between gap-2 mt-1",
+            isCompact && "max-lg:gap-1 max-lg:mt-0.5",
+          )}
+        >
+          <h2
+            className={cn(
+              "line-clamp-2 text-sm font-normal text-neutral-900",
+              isCompact && "max-lg:text-[11px] max-lg:leading-snug",
+            )}
+          >
+            {product.title}
+            {isOutOfStock ? (
+              <span className="ml-1.5 text-sm font-medium text-red-600 max-lg:text-[10px]">
+                Out of Stock
+              </span>
+            ) : null}
+          </h2>
+          <Price
+            amount={amount}
+            currencyCode={currencyCode}
+            className={cn(
+              "text-sm text-neutral-600 whitespace-nowrap font-mono",
+              isCompact && "max-lg:text-[10px]",
+            )}
+            currencyCodeClassName="hidden"
+          />
+        </div>
       </div>
-    </div>
-  );
-
-  // Leave only the category name when in bento mode
-  const meta = isBento ? (
-    <div className="hidden mt-1.5 px-0.5 md:block">
-      <p className="truncate text-xs font-medium text-neutral-500">
-        {category}
-      </p>
-    </div>
-  ) : (
-    <div
-      className={cn(
-        "mt-3 space-y-1",
-        isCompact && "max-lg:mt-1.5 max-lg:space-y-0.5",
-        isOutOfStock && "opacity-60 grayscale",
-      )}
-    >
-      <p
-        className={cn(
-          "text-sm text-neutral-400",
-          isCompact && "max-lg:text-[10px]",
-        )}
-      >
-        {brand}
-        <span className="mx-1 text-neutral-300 max-lg:mx-0.5">·</span>
-        {category}
-      </p>
-      <h2
-        className={cn(
-          "line-clamp-2 text-base font-normal text-neutral-900",
-          isCompact && "max-lg:text-[11px] max-lg:leading-snug",
-        )}
-      >
-        <span className="font-semibold">{brand}</span> {product.title}
-        {isOutOfStock ? (
-          <span className="ml-1.5 text-sm font-medium text-red-600 max-lg:text-[10px]">
-            Out of Stock
-          </span>
-        ) : null}
-      </h2>
-      <Price
-        amount={amount}
-        currencyCode={currencyCode}
-        className={cn(
-          "text-sm text-neutral-600",
-          isCompact && "max-lg:text-[10px]",
-        )}
-        currencyCodeClassName="hidden"
-        wholeNumber
-      />
     </div>
   );
 
@@ -182,12 +160,10 @@ export function HomeProductCard({
           onClick={(e) => e.preventDefault()}
         >
           {imageBlock}
-          {meta}
         </div>
       ) : (
         <Link href={productHref} prefetch className="block min-w-0">
           {imageBlock}
-          {meta}
         </Link>
       )}
     </article>

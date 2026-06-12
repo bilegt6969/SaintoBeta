@@ -1,17 +1,20 @@
+"use client";
+
 import { cn } from "lib/cn";
 import type { Image as CommerceImage } from "lib/commerce/types";
 import type { NavLink } from "lib/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { BlackCardFooter } from "./black-card-footer";
 
 const BRANDS: NavLink[] = [
-  { label: "Apple", href: "/search?q=apple" },
-  { label: "Ugmonk", href: "/search?q=ugmonk" },
-  { label: "Hardgraft", href: "/search?q=hardgraft" },
-  { label: "Teenage Engineering", href: "/search?q=teenage+engineering" },
-  { label: "Grovemade", href: "/search?q=grovemade" },
-  { label: "Logitech", href: "/search?q=logitech" },
+  { label: "Moscot", href: "/search?q=Moscot" },
+  { label: "Maison Margiela", href: "/search?q=Maison+Margiela" },
+  { label: "Based", href: "/search?q=Based" },
+  { label: "Goyard", href: "/search?q=Goyard" },
+  { label: "Apple", href: "/search?q=Apple" },
+  { label: "Logitech", href: "/search?q=Logitech" },
 ];
 
 function NavColumn({
@@ -76,13 +79,13 @@ function CardLogo({
     compact && !mobileLogoOnly && "mb-2",
     !compact && !mobileLogoOnly && "mb-4",
     mobileLogoOnly &&
-      "flex max-lg:mb-0 max-lg:h-full max-lg:w-full max-lg:items-center max-lg:justify-center lg:mb-4",
+      "flex max-lg:mb-0 max-lg:h-full max-lg:w-full max-lg:items-start max-lg:justify-start lg:mb-4",
   );
 
   const logoClass = cn(
     "object-contain brightness-0 invert",
     mobileLogoOnly &&
-      "max-lg:mx-auto max-lg:h-auto max-lg:max-h-[72%] max-lg:w-auto max-lg:max-w-[88%] max-lg:object-center",
+      "max-lg:h-auto max-lg:max-h-[72%] max-lg:w-auto max-lg:max-w-[88%] max-lg:object-left",
     mobileLogoOnly &&
       "lg:h-[3.375rem] lg:w-auto lg:max-w-[19.5rem] lg:object-left",
     !mobileLogoOnly &&
@@ -111,14 +114,16 @@ function CardLogo({
 
   return (
     <Link href={logoHref} className={linkClass} aria-label={siteName}>
-      <Image
-        src="/Lelogo.svg"
-        alt={siteName}
-        width={1666}
-        height={360}
-        className={logoClass}
-        priority
-      />
+      <span
+        className={cn(
+          "block truncate text-white font-bold leading-tight",
+          compact && "text-xl sm:text-2xl",
+          !compact && "text-2xl sm:text-3xl",
+          mobileLogoOnly && "max-lg:text-3xl lg:text-2xl",
+        )}
+      >
+        {siteName}
+      </span>
     </Link>
   );
 }
@@ -130,6 +135,9 @@ export function BlackCard({
   categories,
   activeCategoryHref,
   variant = "default",
+  showNav = true,
+  showFooter = true,
+  description,
 }: {
   siteName?: string;
   logoHref?: string;
@@ -138,16 +146,24 @@ export function BlackCard({
   activeCategoryHref?: string;
   /** Fills bento row-span-2 cell on mobile category grids */
   variant?: "default" | "bento";
+  /** Whether to show navigation columns (Categories, Top brands) */
+  showNav?: boolean;
+  /** Whether to show the footer text */
+  showFooter?: boolean;
+  description?: string;
 }) {
   const isBento = variant === "bento";
+  const [hovered, setHovered] = useState(false);
 
   return (
     <article className="flex w-full flex-col">
       <div
         className={cn(
-          "relative flex aspect-[4/3] w-full min-h-0 flex-col overflow-hidden rounded-2xl bg-black p-3 sm:p-4",
+          "relative flex aspect-square w-full min-h-0 flex-col overflow-hidden rounded-2xl bg-black p-3 sm:p-4 sm:aspect-[4/3]",
           isBento && "max-lg:p-4",
         )}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         <CardLogo
           siteName={siteName}
@@ -156,28 +172,71 @@ export function BlackCard({
           compact={isBento}
           mobileLogoOnly={isBento}
         />
-        <div
-          className={cn(
-            "grid min-h-0 flex-1 grid-cols-2 gap-x-2 gap-y-0.5 overflow-hidden sm:gap-x-3",
-            isBento && "hidden lg:grid",
-          )}
-        >
-          <NavColumn
-            title="Categories"
-            items={categories}
-            activeHref={activeCategoryHref}
-            compact={isBento}
-          />
-          <NavColumn title="Top brands" items={BRANDS} compact={isBento} />
-        </div>
+        {showNav && (
+          <div
+            className={cn(
+              "grid min-h-0 flex-1 grid-cols-2 gap-x-2 gap-y-0.5 overflow-hidden sm:gap-x-3",
+              isBento && "hidden lg:grid",
+            )}
+          >
+            <NavColumn
+              title="Categories"
+              items={categories}
+              activeHref={activeCategoryHref}
+              compact={isBento}
+            />
+            <NavColumn title="Top brands" items={BRANDS} compact={isBento} />
+          </div>
+        )}
+        {!showNav && (
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10">
+            <Link
+              href={logoHref}
+              className="flex items-end gap-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+              aria-label={`Explore ${siteName}`}
+            >
+              <span
+                className={`text-xl font-medium transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] max-lg:text-sm ${
+                  hovered ? "text-neutral-400" : "text-neutral-200"
+                }`}
+              >
+                explore
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`h-6 w-6 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] max-lg:h-4 max-lg:w-4 ${
+                  hovered
+                    ? "translate-x-1 scale-110 text-neutral-400"
+                    : "translate-x-0 scale-100 text-white"
+                }`}
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </Link>
+          </div>
+        )}
       </div>
-      {isBento ? (
-        <div className="mt-2 hidden lg:block">
-          <BlackCardFooter />
+      {description && (
+        <div className="mt-3 max-w-[80%] space-y-2 max-lg:hidden">
+          <p className="text-xs text-neutral-400 line-clamp-2">{description}</p>
         </div>
-      ) : (
-        <BlackCardFooter />
       )}
+      {showFooter &&
+        (isBento ? (
+          <div className="mt-2 hidden lg:block">
+            <BlackCardFooter />
+          </div>
+        ) : (
+          <BlackCardFooter />
+        ))}
     </article>
   );
 }

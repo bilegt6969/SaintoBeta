@@ -1,7 +1,8 @@
 import { getCart } from "lib/commerce";
+import { Suspense } from "react";
 import { CheckoutForm } from "./checkout-form";
 
-export default async function CheckoutPage() {
+async function CheckoutContent() {
   const cart = await getCart();
 
   const lines = (cart?.lines ?? []).map((line) => ({
@@ -22,5 +23,13 @@ export default async function CheckoutPage() {
       subtotalAmount={subtotalAmount}
       totalAmount={totalAmount}
     />
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

@@ -6,12 +6,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const BRANDS = [
-  { label: "Apple", href: "/search?q=apple" },
-  { label: "Ugmonk", href: "/search?q=ugmonk" },
-  { label: "Hardgraft", href: "/search?q=hardgraft" },
-  { label: "Teenage Engineering", href: "/search?q=teenage+engineering" },
-  { label: "Grovemade", href: "/search?q=grovemade" },
-  { label: "Logitech", href: "/search?q=logitech" },
+  { label: "Moscot", href: "/search?q=Moscot" },
+  { label: "Maison Margiela", href: "/search?q=Maison+Margiela" },
+  { label: "Based", href: "/search?q=Based" },
+  { label: "Goyard", href: "/search?q=Goyard" },    
+  { label: "Apple", href: "/search?q=Apple" },
+  { label: "Logitech", href: "/search?q=Logitech" },
 ];
 
 function NavColumn({

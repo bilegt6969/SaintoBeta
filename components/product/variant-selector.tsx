@@ -49,7 +49,7 @@ export function VariantSelector({
                     "flex items-center justify-center rounded-full px-5 py-2 text-sm font-medium transition-all duration-200",
                     {
                       "bg-neutral-900 text-white shadow-sm": isActive,
-                      "bg-transparent text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100":
+                      "bg-transparent text-neutral-500 hover:text-neutral-900 hover:bg-white":
                         !isActive && isAvailable,
                       "cursor-not-allowed text-neutral-300 line-through":
                         !isAvailable,

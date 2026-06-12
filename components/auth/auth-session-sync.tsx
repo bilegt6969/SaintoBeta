@@ -1,12 +1,14 @@
 "use client";
 
-import { onAuthStateChanged } from "firebase/auth";
 import { establishAuthSession, signOutSession } from "app/actions/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "lib/firebase";
 import { useEffect } from "react";
 
 export function AuthSessionSync() {
   useEffect(() => {
+    if (!auth) return;
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {

@@ -2,7 +2,7 @@
 
 import { addItem } from "components/cart/actions";
 import type { Product } from "lib/commerce";
-import { useActionState, useMemo } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 
 export interface AddToCartProps {
   product: Product;
@@ -30,16 +30,43 @@ export function AddToCart({
     null,
   );
 
+  useEffect(() => {
+    if (!isPending && message === null) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    }
+  }, [isPending, message]);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const isAvailable = product.availableForSale;
 
   return (
-    <form action={formAction} className="w-full">
+    <form action={formAction} className="w-full relative">
       <button
         type="submit"
         disabled={isPending || !isAvailable}
         className="w-full flex items-center justify-center rounded-full bg-neutral-900 px-6 py-4 text-sm font-medium text-white hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 transition-colors tracking-wide"
       >
-        {isPending ? (
+        {showSuccess ? (
+          <span className="flex items-center gap-2">
+            <span
+              className="t-success-check"
+              data-state="in"
+              aria-hidden="true"
+            >
+              <svg viewBox="0 0 48 48" fill="none" className="w-5 h-5">
+                <path
+                  d="M12 24L20 32L36 16"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            Added to bag
+          </span>
+        ) : isPending ? (
           <span className="flex items-center gap-2">
             <svg
               className="animate-spin h-4 w-4 text-current"

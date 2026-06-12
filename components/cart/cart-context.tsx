@@ -3,11 +3,12 @@
 import type { Cart, CartItem, Product, ProductVariant } from "lib/commerce";
 import { DEFAULT_CURRENCY_CODE } from "lib/constants";
 import React, {
-  createContext,
-  use,
-  useContext,
-  useMemo,
-  useOptimistic,
+    createContext,
+    Suspense,
+    use,
+    useContext,
+    useMemo,
+    useOptimistic,
 } from "react";
 
 type UpdateType = "plus" | "minus" | "delete";
@@ -202,7 +203,7 @@ export function CartProvider({
 }) {
   return (
     <CartContext.Provider value={{ cartPromise }}>
-      {children}
+      <Suspense fallback={null}>{children}</Suspense>
     </CartContext.Provider>
   );
 }

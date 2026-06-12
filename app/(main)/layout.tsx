@@ -1,11 +1,27 @@
-import { Navbar } from "components/layout/navbar";
-import { ReactNode } from "react";
+import Footer from "components/Heading/Footer";
+import { getCategoryPages } from "lib/commerce";
+import { resolveCategoryNavLinks } from "lib/navigation";
+import { ReactNode, Suspense } from "react";
+import ConditionalNavbar from "./conditional-navbar";
+import ConditionalPadding from "./conditional-padding";
 
-export default function MainLayout({ children }: { children: ReactNode }) {
+const siteName = "Sainto";
+
+export default async function MainLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const categoryPages = await getCategoryPages();
+  const categories = resolveCategoryNavLinks(categoryPages);
+
   return (
     <>
-      <Navbar/>
-      {children}
+      <Suspense fallback={null}>
+        <ConditionalNavbar siteName={siteName} categories={categories} />
+      </Suspense>
+      <ConditionalPadding>{children}</ConditionalPadding>
+      <Footer siteName={siteName} categories={categories} />
     </>
   );
 }
