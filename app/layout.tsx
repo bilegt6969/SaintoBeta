@@ -7,6 +7,7 @@ import { getCart } from "lib/commerce";
 import { baseUrl } from "lib/utils";
 import { Geist } from "next/font/google";
 // @ts-ignore - nextjs-toploader types may not resolve correctly
+import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
 import { ReactNode } from "react";
 import "./globals.css";
@@ -74,6 +75,7 @@ export default async function RootLayout({
         </CookieConsentProvider>
         <InvestButton />
       </body>
+      <Analytics />
     </html>
   );
 }

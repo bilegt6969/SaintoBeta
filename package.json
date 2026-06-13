@@ -17,6 +17,7 @@
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@sanity/client": "^7.22.0",
     "@sanity/image-url": "^2.1.1",
+    "@vercel/analytics": "^2.0.1",
     "border-beam": "^1.2.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
