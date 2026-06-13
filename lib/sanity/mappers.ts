@@ -343,7 +343,7 @@ export function mapSanityProduct(
   }
 
   const images =
-    doc.images?.map((image) => mapImage(image, doc.title, 800, 800)) ??
+    doc.images?.map((image) => mapImage(image, doc.title, 1000, 1000)) ??
     ([] as Image[]);
 
   const featuredImage = images[0] ?? {
