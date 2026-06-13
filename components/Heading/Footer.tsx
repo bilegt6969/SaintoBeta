@@ -207,7 +207,7 @@ function HomeFooter({ siteName, categories }: FooterProps) {
 
 function SimpleFooter() {
   return (
-    <footer className="relative w-full overflow-hidden bg-[#f5f5f5] pb-24 pt-20">
+    <footer className="relative w-full overflow-hidden bg-[#f5f5f5] pb-15 pt-20">
       <motion.div
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-neutral-200/50 via-white/0 to-white/0"
         animate={{ opacity: [0.3, 0.7, 0.3], scale: [0.95, 1.05, 0.95] }}
@@ -222,11 +222,11 @@ function SimpleFooter() {
           transition={{ duration: 1.2, ease: slowEase }}
           className="flex flex-col items-center gap-1.5"
         >
-          <span className="font-sans text-[11px] font-medium tracking-[0.12em] text-neutral-400/90 antialiased transition-colors duration-500 hover:text-neutral-600 select-none">
-            End of the line.
+          <span className="font-sans text-[12px]  tracking-[0.04em] text-neutral-400/90 antialiased transition-colors duration-500 hover:text-neutral-600 select-none">
+            Thats all.
           </span>
-          <span className="font-sans text-[9px] font-light tracking-[0.15em] text-neutral-300 antialiased select-none">
-            "lé finds"
+          <span className="font-sans text-[12px] tracking-[0.04em] text-neutral-400/90 antialiased select-none">
+            For now.
           </span>
         </motion.div>
       </div>

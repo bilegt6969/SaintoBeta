@@ -166,24 +166,31 @@ type SanityHomeConfig = {
   }[];
 };
 
-function mapImage(image: SanityImage, fallbackAlt: string): Image {
-  const url = urlForImage(image).width(1200).height(1200).url();
+function mapImage(
+  image: SanityImage,
+  fallbackAlt: string,
+  width: number = 1200,
+  height: number = 1200,
+): Image {
+  const url = urlForImage(image).width(width).height(height).url();
   return {
     url,
     altText: image.alt || fallbackAlt,
-    width: 1200,
-    height: 1200,
+    width,
+    height,
   };
 }
 
 function mapOptionalImage(
   image: SanityImage | undefined,
   fallbackAlt: string,
+  width: number = 1200,
+  height: number = 1200,
 ): Image | undefined {
   if (!image?.asset?._ref) {
     return undefined;
   }
-  return mapImage(image, fallbackAlt);
+  return mapImage(image, fallbackAlt, width, height);
 }
 
 function mapHighlight(highlight: SanityHighlight): ProductHighlight {
@@ -336,7 +343,8 @@ export function mapSanityProduct(
   }
 
   const images =
-    doc.images?.map((image) => mapImage(image, doc.title)) ?? ([] as Image[]);
+    doc.images?.map((image) => mapImage(image, doc.title, 800, 800)) ??
+    ([] as Image[]);
 
   const featuredImage = images[0] ?? {
     url: "",

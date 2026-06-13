@@ -36,6 +36,7 @@ export function GridTileImage({
             "transition duration-300 ease-in-out group-hover:scale-105":
               isInteractive,
           })}
+          quality={90}
           {...props}
         />
       ) : null}

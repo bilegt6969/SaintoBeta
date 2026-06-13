@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 import { cn } from "lib/cn";
 import type { Product } from "lib/commerce";
 import {
-  getProductBrand,
-  getProductCategory,
-  isStaffPick,
+    getProductBrand,
+    getProductCategory,
+    isStaffPick,
 } from "lib/product-meta";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,6 +64,7 @@ export function SearchProductCard({
           fill
           sizes="(max-width: 1023px) 45vw, 30vw"
           priority={priority}
+          quality={90}
           className={cn(
             "object-cover p-4",
             !isOutOfStock &&

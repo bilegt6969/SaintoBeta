@@ -189,10 +189,11 @@ export function Gallery({
                 <Image
                   className="h-full w-full object-cover rounded-[2.5rem]"
                   fill
-                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  sizes="(min-width: 1024px) 45vw, (min-width: 640px) 80vw, 100vw"
                   alt={images[imageIndex]!.altText}
                   src={images[imageIndex]!.src}
                   priority
+                  quality={90}
                 />
               </motion.div>
             </AnimatePresence>

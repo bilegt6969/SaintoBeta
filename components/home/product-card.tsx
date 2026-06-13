@@ -80,6 +80,7 @@ export function HomeProductCard({
           fill
           sizes={imageSizes}
           priority={priority}
+          quality={90}
           className={cn(
             "object-contain p-3 pb-16",
             isCompact && "max-lg:object-cover max-lg:p-2 max-lg:pb-20",
