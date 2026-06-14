@@ -92,15 +92,15 @@ export default function CartModal({
           {/* Sidebar Drawer */}
           <Transition.Child
             as={Fragment}
-            enter="transition-all cubic-bezier(0.16, 1, 0.3, 1) duration-500"
+            enter="will-change-transform transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] duration-[400ms]"
             enterFrom="translate-x-full"
             enterTo="translate-x-0"
-            leave="transition-all cubic-bezier(0.16, 1, 0.3, 1) duration-400"
+            leave="will-change-transform transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] duration-[350ms]"
             leaveFrom="translate-x-0"
             leaveTo="translate-x-full"
           >
             <Dialog.Panel
-              className={`t-modal fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-gray-100 bg-white/90 p-8 text-[#1d1d1f] backdrop-blur-2xl md:w-[420px] shadow-[0_0_50px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-black/90 dark:text-white ${isOpen ? "is-open" : ""} ${isClosing ? "is-closing" : ""}`}
+              className={`fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-gray-100 bg-white/95 p-8 text-[#1d1d1f] backdrop-blur-xl md:w-[420px] shadow-[0_0_50px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-black/95 dark:text-white ${isOpen ? "backdrop-blur-2xl" : ""}`}
             >
               {/* Drawer Header */}
               <div className="flex items-center justify-between pb-6 border-b border-gray-100 dark:border-neutral-800">

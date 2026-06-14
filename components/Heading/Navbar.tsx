@@ -133,7 +133,7 @@ export default function Navbar({
           >
             <Wrapper
               className={cn(
-                "island-surface flex h-12 w-fit max-w-[calc(100vw-1.5rem)] items-center justify-between gap-2.5 rounded-full px-1.5 sm:gap-4 sm:px-2",
+                "island-surface flex h-12 w-fit max-w-[calc(100vw-1.5rem)] items-center justify-between gap-2.5 rounded-full px-2 sm:gap-4 sm:px-2",
               )}
             >
               <div className="flex items-center gap-1 sm:gap-1.5">

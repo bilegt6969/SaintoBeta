@@ -1,6 +1,7 @@
 import { Gallery } from "components/product/gallery";
 import { KeyIngredientsSection } from "components/product/key-ingredients-section";
 import { ProductDescription } from "components/product/product-description";
+import { ProductPageWrapper } from "components/product/product-page-wrapper";
 import { ProductPillCard } from "components/product/product-pill-card";
 import type { Image } from "lib/commerce";
 import { getProduct, getProductRecommendations } from "lib/commerce";
@@ -41,24 +42,26 @@ export default function ProductPage(props: {
   params: Promise<{ handle: string }>;
 }) {
   return (
-    <div className="min-h-screen bg-white font-sans text-neutral-950">
-      <div className="mx-auto max-w-[1400px] px-4 py-8 md:px-8 md:py-12 lg:px-12">
-        <Suspense
-          fallback={
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-              <div className="w-full lg:w-1/2 bg-neutral-50 animate-pulse rounded-3xl aspect-square" />
-              <div className="flex min-w-0 w-full lg:w-1/2 flex-col gap-6 lg:pt-8">
-                <div className="h-4 w-32 bg-neutral-100 animate-pulse rounded-full" />
-                <div className="h-12 w-3/4 bg-neutral-100 animate-pulse rounded-lg" />
-                <div className="h-40 w-full bg-neutral-100 animate-pulse rounded-[2rem] mt-6" />
+    <ProductPageWrapper>
+      <div className="min-h-screen bg-transparent font-sans text-neutral-950">
+        <div className="mx-auto max-w-[1400px] px-4 py-8 md:px-8 md:py-12 lg:px-12">
+          <Suspense
+            fallback={
+              <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+                <div className="w-full lg:w-1/2 bg-neutral-50 animate-pulse rounded-3xl aspect-square" />
+                <div className="flex min-w-0 w-full lg:w-1/2 flex-col gap-6 lg:pt-8">
+                  <div className="h-4 w-32 bg-neutral-100 animate-pulse rounded-full" />
+                  <div className="h-12 w-3/4 bg-neutral-100 animate-pulse rounded-lg" />
+                  <div className="h-40 w-full bg-neutral-100 animate-pulse rounded-[2rem] mt-6" />
+                </div>
               </div>
-            </div>
-          }
-        >
-          <ProductContent paramsPromise={props.params} />
-        </Suspense>
+            }
+          >
+            <ProductContent paramsPromise={props.params} />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </ProductPageWrapper>
   );
 }
 

@@ -2,19 +2,20 @@
 
 import { BlackCard } from "components/home/black-card";
 import { ProductGridShell } from "components/home/product-grid-shell";
+import LiteFooter from "components/layout/lite-footer";
 import { SearchBar } from "components/search/search-bar";
 import {
-  fadeUpVariants,
-  gridItemVariants,
-  pageVariants,
-  searchBarVariants,
-  searchEase,
-  searchSpring,
-  useSearchMotion,
+    fadeUpVariants,
+    gridItemVariants,
+    pageVariants,
+    searchBarVariants,
+    searchEase,
+    searchSpring,
+    useSearchMotion,
 } from "components/search/search-motion";
 import {
-  SearchProductCard,
-  SearchProductCardSkeleton,
+    SearchProductCard,
+    SearchProductCardSkeleton,
 } from "components/search/search-product-card";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "lib/cn";
@@ -426,6 +427,7 @@ export function SearchPageClient({
           {pageInner}
         </div>
       )}
+      <LiteFooter />
     </div>
   );
 }
