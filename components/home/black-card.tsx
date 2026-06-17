@@ -90,7 +90,7 @@ function CardLogo({
       "lg:h-[3.375rem] lg:w-auto lg:max-w-[19.5rem] lg:object-left",
     !mobileLogoOnly &&
       compact &&
-      "mb-2 h-8 w-auto max-w-[9rem] object-left sm:mb-3 sm:h-9",
+      "mb-2 h-16 w-auto max-w-[18rem] object-left sm:mb-3 sm:h-9",
     !mobileLogoOnly &&
       !compact &&
       "mb-4 h-12 w-auto max-w-[16.5rem] object-left sm:h-[3.375rem] sm:max-w-[19.5rem]",
@@ -170,13 +170,12 @@ export function BlackCard({
           logoHref={logoHref}
           logo={logo}
           compact={isBento}
-          mobileLogoOnly={isBento}
+          mobileLogoOnly={false}
         />
         {showNav && (
           <div
             className={cn(
               "grid min-h-0 flex-1 grid-cols-2 gap-x-2 gap-y-0.5 overflow-hidden sm:gap-x-3",
-              isBento && "hidden lg:grid",
             )}
           >
             <NavColumn
@@ -229,14 +228,7 @@ export function BlackCard({
           <p className="text-xs text-neutral-400 line-clamp-2">{description}</p>
         </div>
       )}
-      {showFooter &&
-        (isBento ? (
-          <div className="mt-2 hidden lg:block">
-            <BlackCardFooter />
-          </div>
-        ) : (
-          <BlackCardFooter />
-        ))}
+      {showFooter && !isBento && <BlackCardFooter />}
     </article>
   );
 }

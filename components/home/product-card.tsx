@@ -4,9 +4,9 @@ import Price from "components/price";
 import { cn } from "lib/cn";
 import type { Product } from "lib/commerce";
 import {
-    getProductBrand,
-    getProductCategory,
-    isStaffPick,
+  getProductBrand,
+  getProductCategory,
+  isStaffPick,
 } from "lib/product-meta";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,7 +66,7 @@ export function HomeProductCard({
   const imageBlock = (
     <div
       className={cn(
-        "category-bento-product-image t-resize relative w-full overflow-hidden rounded-2xl bg-white",
+        "category-bento-product-image mb-4 lg:mb-0 t-resize relative w-full overflow-hidden rounded-2xl bg-white",
         !isCompact && "aspect-square",
         isCompact && "aspect-square max-lg:rounded-xl",
         isBento && "aspect-square rounded-xl",
