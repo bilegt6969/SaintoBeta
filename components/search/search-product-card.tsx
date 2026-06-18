@@ -17,20 +17,13 @@ const PRODUCT_IMAGE_BG = "#f3f3f3";
 
 function StaffPickBadge() {
   return (
-    <div className="absolute left-4 top-4 z-20 flex items-center gap-1.5 text-sm font-medium text-violet-600">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
+    <div className="absolute left-4 top-4 z-20 flex items-center gap-1.5 text-sm font-medium text-[#b99651]">
+      <img
+        src="https://framerusercontent.com/images/R8O7wtxQUxaazZlYk3TRoGuBqo.svg?width=22&height=23"
+        alt=""
         className="h-4 w-4"
         aria-hidden
-      >
-        <path
-          fillRule="evenodd"
-          d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
-          clipRule="evenodd"
-        />
-      </svg>
+      />
       Staff Pick
     </div>
   );

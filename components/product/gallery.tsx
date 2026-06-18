@@ -5,18 +5,19 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { GridTileImage } from "components/grid/tile";
 import { AnimatePresence, motion } from "framer-motion";
+import { ImageGeneration } from "img-fx";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
-const smoothEase = [0.32, 0.72, 0, 1] as const;
+const snapEase = [0.22, 1, 0.36, 1] as const;
 
 const slideVariants = {
   enter: (dir: number) => ({
-    x: dir > 0 ? "15%" : "-15%",
+    x: dir > 0 ? "10%" : "-10%",
     opacity: 0,
-    scale: 0.95,
-    filter: "blur(12px)", // Cinematic blur on entry
+    scale: 0.98,
+    filter: "blur(8px)",
   }),
   center: {
     x: 0,
@@ -24,22 +25,22 @@ const slideVariants = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      x: { type: "spring" as const, stiffness: 260, damping: 28 },
-      opacity: { duration: 0.5, ease: smoothEase },
-      scale: { duration: 0.5, ease: smoothEase },
-      filter: { duration: 0.4, ease: smoothEase },
+      x: { type: "spring" as const, stiffness: 400, damping: 35 },
+      opacity: { duration: 0.25, ease: snapEase },
+      scale: { duration: 0.25, ease: snapEase },
+      filter: { duration: 0.2, ease: snapEase },
     },
   },
   exit: (dir: number) => ({
-    x: dir < 0 ? "15%" : "-15%",
+    x: dir < 0 ? "10%" : "-10%",
     opacity: 0,
-    scale: 0.95,
-    filter: "blur(12px)", // Cinematic blur on exit
+    scale: 0.98,
+    filter: "blur(8px)",
     transition: {
-      x: { type: "spring" as const, stiffness: 260, damping: 28 },
-      opacity: { duration: 0.4, ease: smoothEase },
-      scale: { duration: 0.4, ease: smoothEase },
-      filter: { duration: 0.3, ease: smoothEase },
+      x: { type: "spring" as const, stiffness: 400, damping: 35 },
+      opacity: { duration: 0.2, ease: snapEase },
+      scale: { duration: 0.2, ease: snapEase },
+      filter: { duration: 0.15, ease: snapEase },
     },
   }),
 };
@@ -51,15 +52,30 @@ export function Gallery({
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [easterEggClicks, setEasterEggClicks] = useState(0); // 🥚 Easter Egg State
+  const [easterEggClicks, setEasterEggClicks] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // ⚡ Default to true so the very first load gets the WebGL wow factor
+  const [needsEffect, setNeedsEffect] = useState(true);
 
   const goTo = useCallback(
     (index: number) => {
       if (images.length === 0) return;
-      setDirection(index > imageIndex ? 1 : -1);
+
       const next = ((index % images.length) + images.length) % images.length;
+
+      // 🧠 CACHE DETECTION: Check if the browser already has this image ready
+      if (typeof window !== "undefined") {
+        const img = new window.Image();
+        img.src = images[next]!.src;
+
+        // If img.complete is true, it's instant. Turn OFF the canvas effect.
+        // If it's false, it's hitting the network. Turn ON the canvas effect.
+        setNeedsEffect(!img.complete);
+      }
+
+      setDirection(index > imageIndex ? 1 : -1);
       setImageIndex(next);
     },
     [imageIndex, images.length],
@@ -83,14 +99,11 @@ export function Gallery({
     );
   }
 
-  // Easter Egg Trigger logic
   const handleImageClick = () => {
     setEasterEggClicks((prev) => prev + 1);
-    // Reset clicks after a timeout to require rapid clicking
     setTimeout(() => setEasterEggClicks(0), 2000);
   };
 
-  // Touch handlers for swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0]?.clientX ?? null);
@@ -102,20 +115,35 @@ export function Gallery({
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      goTo(nextImageIndex);
-    } else if (isRightSwipe) {
-      goTo(previousImageIndex);
-    }
+    if (distance > 50) goTo(nextImageIndex);
+    else if (distance < -50) goTo(previousImageIndex);
   };
 
   return (
     <div className="w-full">
+      {/* Background Preloaders */}
+      {hasMultiple && (
+        <div className="hidden" aria-hidden="true">
+          <Image
+            src={images[nextImageIndex]!.src}
+            alt="preload-next"
+            width={100}
+            height={100}
+            priority={true}
+            fetchPriority="high"
+          />
+          <Image
+            src={images[previousImageIndex]!.src}
+            alt="preload-prev"
+            width={100}
+            height={100}
+            priority={true}
+            fetchPriority="high"
+          />
+        </div>
+      )}
+
       <div
         className={clsx("flex gap-3", { "lg:flex-row lg:gap-5": hasMultiple })}
       >
@@ -134,7 +162,7 @@ export function Gallery({
                     className={clsx(
                       "relative h-[72px] w-[72px] overflow-hidden rounded-md transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
                       isActive
-                        ? "ring-2 ring-neutral-900 ring-offset-2 scale-105"
+                        ? "ring-2 ring-neutral-500 ring-offset-4 scale-105"
                         : "hover:scale-105 opacity-70 hover:opacity-100",
                     )}
                   >
@@ -162,7 +190,6 @@ export function Gallery({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            // 🥚 Easter Egg Animation: 5 rapid clicks triggers a playful 3D flip
             animate={{
               rotateY: easterEggClicks >= 5 ? 360 : 0,
               scale: easterEggClicks >= 5 ? 0.8 : 1,
@@ -186,22 +213,37 @@ export function Gallery({
                 exit="exit"
                 className="absolute inset-0"
               >
-                <Image
-                  className="h-full w-full object-cover rounded-[2.5rem]"
-                  fill
-                  sizes="(min-width: 1024px) 45vw, (min-width: 640px) 80vw, 100vw"
-                  alt={images[imageIndex]!.altText}
-                  src={images[imageIndex]!.src}
-                  priority
-                  quality={90}
-                />
+                {/* ⚡ LOGIC SPLIT based on cache detection */}
+                {needsEffect ? (
+                  <ImageGeneration
+                    preset="pixels-organic"
+                    images={[images[imageIndex]!.src]}
+                    autoReveal
+                    className="h-full w-full"
+                  >
+                    <div
+                      className="h-full w-full rounded-[2.5rem]"
+                      aria-label={images[imageIndex]!.altText}
+                      role="img"
+                    />
+                  </ImageGeneration>
+                ) : (
+                  <Image
+                    className="h-full w-full object-cover rounded-[2.5rem]"
+                    fill
+                    sizes="(min-width: 1024px) 45vw, (min-width: 640px) 80vw, 100vw"
+                    alt={images[imageIndex]!.altText}
+                    src={images[imageIndex]!.src}
+                    priority
+                    quality={90}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
 
             {/* Island Navigation UI */}
             {hasMultiple ? (
               <>
-                {/* Mobile Back Button - Only visible on mobile */}
                 <Link
                   href="/"
                   className="lg:hidden absolute left-5 top-5 z-20 flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-neutral-800 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25] transition-all hover:bg-white/80"
@@ -210,12 +252,10 @@ export function Gallery({
                   <span>Back</span>
                 </Link>
 
-                {/* Counter - Hidden on mobile when back button is shown */}
                 <div className="hidden lg:block absolute left-5 top-5 z-10 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold tabular-nums text-neutral-800 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25]">
                   {imageIndex + 1} / {images.length}
                 </div>
 
-                {/* Arrows */}
                 <div className="absolute bottom-5 right-5 z-10 flex items-center gap-1.5 rounded-full bg-white/70 p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25]">
                   <button
                     type="button"

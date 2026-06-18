@@ -25,13 +25,13 @@ export function GridTileImage({
         "group flex h-full w-full items-center justify-center overflow-hidden rounded",
         {
           relative: label,
-          "border-neutral-300 p-1 bg-neutral-200/40": active,
+          "border-neutral-100 bg-neutral-200/40": active,
         },
       )}
     >
       {props.src ? (
         <Image
-          className={clsx("relative h-full w-full object-contain", {
+          className={clsx("relative h-full rounded w-full object-contain", {
             "p-6 pb-16": label,
             "transition duration-300 ease-in-out group-hover:scale-105":
               isInteractive,
