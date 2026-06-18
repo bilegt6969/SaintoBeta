@@ -46,7 +46,7 @@ const manifestoText = [
   "Either it does not exist in Ulaanbaatar, the shipping costs more than the item itself, or the website does not even deliver here.",
   "It is actually kind of insane how many good finds never make it here.",
   "So we built Sainto.",
-  "A place for all those pieces you keep seeing online but can never get your hands on. The niche finds. The underrated brands. The stuff your algorithm keeps feeding you.",
+  "A place for all those pieces you keep seeing online but can never get your hands on. The niché finds. The underrated brands. The stuff your algorithm keeps feeding you.",
   "No more gatekeeping.",
   'No more asking "where did you get that?"',
   "No more spending three hours searching with zero aura results.",
@@ -55,12 +55,12 @@ const manifestoText = [
   "But the idea stays the same.",
   "Finding cool stuff should not feel like a side quest.",
   "Thanks for stopping by.",
-  "Sainto",
+  "-Bilegt Amartuvshin, Stanford '30",
 ];
 
 export default function AboutPage() {
   return (
-    <main className="relative min-h-screen bg-[#F5F5F7] flex flex-col items-center py-16 px-6 font-sans antialiased selection:bg-neutral-300 overflow-hidden z-0">
+    <main className="relative min-h-screen bg-[#F5F5F7] flex flex-col items-center pt-2 pb-16 px-6 font-sans antialiased selection:bg-neutral-300 overflow-hidden z-0">
       {/* Animated Blurry Background Orbs (Glassmorphism Effect) */}
       <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
         <motion.div
@@ -98,10 +98,10 @@ export default function AboutPage() {
         {/* 1920x1080 Image Container */}
         <motion.div
           variants={imageVariants}
-          className="relative w-full aspect-video bg-[#E5E5EA] rounded-[24px] sm:rounded-[32px] overflow-hidden mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+          className="relative w-full aspect-square bg-[#E5E5EA] rounded-[24px] sm:rounded-[32px] overflow-hidden mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
         >
           <Image
-            src="https://i.pinimg.com/736x/16/d9/66/16d96602abcfbcfe627e6beeae47be4a.jpg"
+            src="https://i.pinimg.com/736x/e3/42/2c/e3422ceeb1978a79f5b3219d6a8bc46a.jpg"
             alt="Sainto Cover"
             fill
             priority
@@ -117,9 +117,9 @@ export default function AboutPage() {
           {/* Eyebrow text matching the reference image */}
           <motion.h2
             variants={textVariants}
-            className="text-[#86868B] text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.25em] mb-4"
+            className="text-[#86868B] text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.1em] mb-4"
           >
-            A Letter From The Founders
+            A Letter From The Founder
           </motion.h2>
 
           <motion.h1

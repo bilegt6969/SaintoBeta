@@ -87,7 +87,6 @@ export default function Menu({
               <ul className="flex flex-col space-y-0.5">
                 {[
                   { label: "About", href: "/about" },
-                  { label: "Careers", href: "/careers" },
                   { label: "Blog", href: "/blog" },
                   { label: "Contact", href: "/contact" },
                 ].map((item) => (

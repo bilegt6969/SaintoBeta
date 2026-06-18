@@ -22,7 +22,6 @@ const categoryLinks = [
 
 const companyLinks = [
   { label: "About", href: "/about" },
-  { label: "Careers", href: "#" },
   { label: "Blog", href: "#" },
   { label: "Contact", href: "/contact" },
 ];
