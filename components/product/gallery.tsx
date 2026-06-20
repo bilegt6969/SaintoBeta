@@ -8,16 +8,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ImageGeneration } from "img-fx";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const snapEase = [0.22, 1, 0.36, 1] as const;
+// Upgraded easing curve for a smoother, more premium feel
+const smoothEase = [0.32, 0.72, 0, 1] as const;
 
+// Enhanced variants with deeper blur and smoother scaling
 const slideVariants = {
   enter: (dir: number) => ({
-    x: dir > 0 ? "10%" : "-10%",
+    x: dir > 0 ? "15%" : "-15%",
     opacity: 0,
-    scale: 0.98,
-    filter: "blur(8px)",
+    scale: 0.95,
+    filter: "blur(12px)",
   }),
   center: {
     x: 0,
@@ -25,24 +27,53 @@ const slideVariants = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      x: { type: "spring" as const, stiffness: 400, damping: 35 },
-      opacity: { duration: 0.25, ease: snapEase },
-      scale: { duration: 0.25, ease: snapEase },
-      filter: { duration: 0.2, ease: snapEase },
+      x: { type: "spring" as const, stiffness: 300, damping: 30 },
+      opacity: { duration: 0.4, ease: smoothEase },
+      scale: { duration: 0.4, ease: smoothEase },
+      filter: { duration: 0.4, ease: smoothEase },
     },
   },
   exit: (dir: number) => ({
-    x: dir < 0 ? "10%" : "-10%",
+    x: dir < 0 ? "15%" : "-15%",
     opacity: 0,
-    scale: 0.98,
-    filter: "blur(8px)",
+    scale: 0.95,
+    filter: "blur(12px)",
     transition: {
-      x: { type: "spring" as const, stiffness: 400, damping: 35 },
-      opacity: { duration: 0.2, ease: snapEase },
-      scale: { duration: 0.2, ease: snapEase },
-      filter: { duration: 0.15, ease: snapEase },
+      x: { type: "spring" as const, stiffness: 300, damping: 30 },
+      opacity: { duration: 0.3, ease: smoothEase },
+      scale: { duration: 0.3, ease: smoothEase },
+      filter: { duration: 0.3, ease: smoothEase },
     },
   }),
+};
+
+// Stable wrapper: only remounts ImageGeneration when `src` actually changes.
+const StableImageEffect = ({
+  src,
+  altText,
+}: {
+  src: string;
+  altText: string;
+}) => {
+  const imagesRef = useRef<string[]>([src]);
+  if (imagesRef.current[0] !== src) {
+    imagesRef.current = [src];
+  }
+
+  return (
+    <ImageGeneration
+      preset="pixels-organic"
+      images={imagesRef.current}
+      autoReveal
+      className="h-full w-full"
+    >
+      <div
+        className="h-full w-full rounded-[2.5rem]"
+        aria-label={altText}
+        role="img"
+      />
+    </ImageGeneration>
+  );
 };
 
 export function Gallery({
@@ -55,31 +86,63 @@ export function Gallery({
   const [easterEggClicks, setEasterEggClicks] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  // ⚡ Default to true so the very first load gets the WebGL wow factor
-  const [needsEffect, setNeedsEffect] = useState(true);
+  const [revealedSrcs, setRevealedSrcs] = useState<Set<string>>(new Set());
+
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!imageContainerRef.current) return;
+
+    if (!document.fullscreenElement) {
+      imageContainerRef.current.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   const goTo = useCallback(
     (index: number) => {
       if (images.length === 0) return;
-
       const next = ((index % images.length) + images.length) % images.length;
-
-      // 🧠 CACHE DETECTION: Check if the browser already has this image ready
-      if (typeof window !== "undefined") {
-        const img = new window.Image();
-        img.src = images[next]!.src;
-
-        // If img.complete is true, it's instant. Turn OFF the canvas effect.
-        // If it's false, it's hitting the network. Turn ON the canvas effect.
-        setNeedsEffect(!img.complete);
-      }
-
       setDirection(index > imageIndex ? 1 : -1);
       setImageIndex(next);
     },
     [imageIndex, images.length],
   );
+
+  const currentSrc = images[imageIndex]?.src ?? "";
+  const needsEffect = isMounted && !revealedSrcs.has(currentSrc);
+
+  useEffect(() => {
+    if (!needsEffect || !currentSrc) return;
+    const id = setTimeout(() => {
+      setRevealedSrcs((prev) => {
+        if (prev.has(currentSrc)) return prev;
+        const next = new Set(prev);
+        next.add(currentSrc);
+        return next;
+      });
+    }, 50);
+    return () => clearTimeout(id);
+  }, [currentSrc, needsEffect]);
 
   const nextImageIndex = imageIndex + 1 < images.length ? imageIndex + 1 : 0;
   const previousImageIndex =
@@ -122,7 +185,6 @@ export function Gallery({
 
   return (
     <div className="w-full">
-      {/* Background Preloaders */}
       {hasMultiple && (
         <div className="hidden" aria-hidden="true">
           <Image
@@ -147,7 +209,6 @@ export function Gallery({
       <div
         className={clsx("flex gap-3", { "lg:flex-row lg:gap-5": hasMultiple })}
       >
-        {/* Thumbnails Sidebar */}
         {hasMultiple ? (
           <ul className="hidden shrink-0 flex-col gap-3 lg:flex">
             {images.map((image, index) => {
@@ -182,10 +243,15 @@ export function Gallery({
           </ul>
         ) : null}
 
-        {/* Main Image Window */}
         <div className="min-w-0 flex-1">
           <motion.div
-            className="relative aspect-square w-full overflow-hidden bg-neutral-50 rounded-[2.5rem] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] cursor-crosshair"
+            ref={imageContainerRef}
+            className={clsx(
+              "relative w-full overflow-hidden bg-neutral-50 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] cursor-crosshair",
+              isFullscreen
+                ? "rounded-none h-full"
+                : "aspect-square rounded-[2.5rem]",
+            )}
             onClick={handleImageClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -213,23 +279,19 @@ export function Gallery({
                 exit="exit"
                 className="absolute inset-0"
               >
-                {/* ⚡ LOGIC SPLIT based on cache detection */}
                 {needsEffect ? (
-                  <ImageGeneration
-                    preset="pixels-organic"
-                    images={[images[imageIndex]!.src]}
-                    autoReveal
-                    className="h-full w-full"
-                  >
-                    <div
-                      className="h-full w-full rounded-[2.5rem]"
-                      aria-label={images[imageIndex]!.altText}
-                      role="img"
-                    />
-                  </ImageGeneration>
+                  <StableImageEffect
+                    src={images[imageIndex]!.src}
+                    altText={images[imageIndex]!.altText}
+                  />
                 ) : (
                   <Image
-                    className="h-full w-full object-cover rounded-[2.5rem]"
+                    className={clsx(
+                      "h-full w-full",
+                      isFullscreen
+                        ? "object-contain"
+                        : "object-cover rounded-[2.5rem]",
+                    )}
                     fill
                     sizes="(min-width: 1024px) 45vw, (min-width: 640px) 80vw, 100vw"
                     alt={images[imageIndex]!.altText}
@@ -241,8 +303,7 @@ export function Gallery({
               </motion.div>
             </AnimatePresence>
 
-            {/* Island Navigation UI */}
-            {hasMultiple ? (
+            {hasMultiple && (
               <>
                 <Link
                   href="/"
@@ -255,8 +316,39 @@ export function Gallery({
                 <div className="hidden lg:block absolute left-5 top-5 z-10 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold tabular-nums text-neutral-800 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25]">
                   {imageIndex + 1} / {images.length}
                 </div>
+              </>
+            )}
 
-                <div className="absolute bottom-5 right-5 z-10 flex items-center gap-1.5 rounded-full bg-white/70 p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25]">
+            {/* Render fullscreen toggle and next/prev controls outside the hasMultiple check */}
+            <div className="absolute bottom-5 right-5 z-10 flex items-center gap-1.5 rounded-full bg-white/70 p-1.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] ring-1 ring-black/5 backdrop-blur-[24px] saturate-[1.25]">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFullscreen();
+                }}
+                aria-label={
+                  isFullscreen ? "Exit fullscreen" : "View fullscreen"
+                }
+                className={buttonClassName}
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                  />
+                </svg>
+              </button>
+
+              {hasMultiple && (
+                <>
                   <button
                     type="button"
                     onClick={(e) => {
@@ -279,12 +371,11 @@ export function Gallery({
                   >
                     <ArrowRightIcon className="h-4 w-4" strokeWidth={2.5} />
                   </button>
-                </div>
-              </>
-            ) : null}
+                </>
+              )}
+            </div>
           </motion.div>
 
-          {/* Mobile Thumbnails */}
           {hasMultiple ? (
             <ul className="mt-4 flex gap-3 overflow-x-auto py-2 px-1 scrollbar-hide lg:hidden">
               {images.map((image, index) => {

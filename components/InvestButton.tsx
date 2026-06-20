@@ -30,7 +30,7 @@ export default function InvestButton() {
       >
         <span className="text-[11px] right-1 leading-tight text-neutral-400">
           Developed by{" "}
-          <span className="underline">
+          <span className="underline italic">
             <Link
               href="https://bytecode-smoky.vercel.app/"
               target="_blank"
@@ -38,8 +38,8 @@ export default function InvestButton() {
             >
               bytecode
             </Link>
-          </span>
-          🅁
+          </span>{" "}
+          ®
         </span>
       </div>
     </div>

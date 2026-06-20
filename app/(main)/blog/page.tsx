@@ -29,7 +29,7 @@ const textVariants = {
 
 export default function BlogPage() {
   return (
-    <main className="relative h-[calc(100vh-68px-40px-280px)] overflow-hidden bg-[#f5f5f5] flex flex-col items-center justify-center px-6 font-sans antialiased selection:bg-neutral-300 z-0">
+    <main className="relative h-[calc(100vh-68px-40px-280px)] overflow-hidden bg-[#f5f5f5] flex flex-col items-center justify-center px-6 font-sans antialiased z-0">
       {/* Animated Blurry Background Orbs */}
       <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
         <motion.div
@@ -42,7 +42,7 @@ export default function BlogPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-[20%] right-[25%] w-[450px] h-[450px] bg-neutral-[#f5f5f5] rounded-full blur-[90px]"
+          className="absolute top-[20%] right-[25%] w-[450px] h-[450px] rounded-full"
         />
         <motion.div
           animate={{
@@ -54,7 +54,7 @@ export default function BlogPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute bottom-[25%] left-[20%] w-[400px] h-[400px] bg-neutral-200/60 rounded-full blur-[80px]"
+          className="absolute bottom-[25%] left-[20%] w-[400px] h-[400px] rounded-full "
         />
       </div>
 

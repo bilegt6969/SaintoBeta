@@ -62,7 +62,7 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
 
       {/* Title Block */}
       <div className="space-y-2">
-        <div className="text-[11px] font-bold uppercase tracking-[0.02em] text-neutral-400">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.02em] text-neutral-400">
           {brand || "Reference"} {brand && category && "&"} {category}
         </div>
 
@@ -109,7 +109,7 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
       {/* Specifications Grid mapped from Sanity `specs` */}
       {product.specs && product.specs.length > 0 && (
         <div className="pt-4">
-          <h2 className="mb-6 text-[11px] font-bold tracking-[0.05em] text-neutral-400 uppercase">
+          <h2 className="mb-6 text-[11px] font-medium tracking-[0.05em] text-neutral-400 uppercase">
             Specifications
           </h2>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
@@ -186,7 +186,7 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
       {/* Metadata Tags */}
       {product.tags && product.tags.length > 0 && (
         <div className="space-y-4 pt-2">
-          <h2 className="text-[11px] font-bold tracking-[0.05em] text-neutral-400 uppercase">
+          <h2 className="text-[11px] font-medium tracking-[0.05em] text-neutral-400 uppercase">
             Tags
           </h2>
           <div className="flex flex-wrap gap-2 pt-1">

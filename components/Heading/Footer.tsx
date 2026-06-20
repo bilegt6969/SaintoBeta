@@ -229,19 +229,6 @@ function SimpleFooter() {
           </span>
         </motion.div>
       </div>
-
-      <div
-        className="absolute inset-x-0 bottom-0 pointer-events-none h-24"
-        style={{
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          background:
-            "linear-gradient(to top, rgba(255,255,255,0.85) 0%, transparent 100%)",
-          maskImage: "linear-gradient(to top, black 10%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to top, black 10%, transparent 100%)",
-        }}
-      />
     </footer>
   );
 }
@@ -249,9 +236,12 @@ function SimpleFooter() {
 export default function Footer({ siteName }: FooterProps) {
   const pathname = usePathname();
 
-  return pathname === "/" ? (
-    <HomeFooter siteName={siteName} />
-  ) : (
+  const isCategoryPage = pathname?.startsWith("/category");
+  const isSearchPage = pathname === "/search";
+
+  return isCategoryPage || isSearchPage ? (
     <SimpleFooter />
+  ) : (
+    <HomeFooter siteName={siteName} />
   );
 }
