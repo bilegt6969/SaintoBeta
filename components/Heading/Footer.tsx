@@ -8,77 +8,90 @@ import { useEffect, useState } from "react";
 
 interface FooterProps {
   siteName?: string;
-  categories?: { label: string; href: string }[];
 }
 
 const SITE_NAME_DEFAULT = "Sainto";
 
-const categoryLinks = [
-  { label: "Accessories", href: "/category/Accessories" },
-  { label: "Beauté", href: "/category/beaute" },
-  { label: "Clothé", href: "/category/clothe" },
-  { label: "Tech", href: "/category/tech" },
+const bottomLinks = [
+  { label: "Terms & Conditions", href: "#" },
+  { label: "Privacy policy", href: "#" },
+  { label: "Support", href: "#" },
+  { label: "Cookie Settings", href: "#" },
 ];
 
-const companyLinks = [
-  { label: "About", href: "/about" },
-  { label: "Blog", href: "#" },
-  { label: "Contact", href: "/contact" },
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/sainto.store",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/sainto.app/",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-full h-full"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    ),
+  },
+  {
+    name: "TikTok",
+    href: "https://www.tiktok.com/@sainto.mn",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Linkedin",
+    href: "https://www.linkedin.com/company/108702260/",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      </svg>
+    ),
+  },
 ];
 
-// --- Animation Physics ---
-// Buttery, slow ease-out for entrance animations
+// --- Animation Configs ---
 const slowEase = [0.16, 1, 0.3, 1] as const;
 
-const staggerContainer = {
+const muiStaggerContainer = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.15 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
   },
 };
 
-const fadeUpItem = {
-  hidden: { opacity: 0, y: 12, filter: "blur(4px)" },
+const muiFadeUpItem = {
+  hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
   show: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 1, ease: slowEase },
+    transition: { duration: 1.2, ease: slowEase },
   },
 };
 
 // --- Components ---
 
-function FooterLinkColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: { label: string; href: string }[];
-}) {
-  return (
-    <motion.div variants={fadeUpItem} className="flex flex-col">
-      <p className="mb-4 text-[13px] font-semibold tracking-wide text-white/90 uppercase antialiased">
-        {title}
-      </p>
-      <ul className="flex flex-col gap-2.5">
-        {links.map((link) => (
-          <li key={link.label}>
-            <Link
-              href={link.href}
-              className="text-[13px] text-neutral-400 transition-colors duration-300 hover:text-white"
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </motion.div>
-  );
-}
-
-function HomeFooter({ siteName, categories }: FooterProps) {
+function HomeFooter({ siteName }: FooterProps) {
   const SITE_NAME = siteName || SITE_NAME_DEFAULT;
   const [mounted, setMounted] = useState(false);
 
@@ -89,116 +102,141 @@ function HomeFooter({ siteName, categories }: FooterProps) {
   const year = mounted ? new Date().getFullYear() : 2026;
 
   return (
-    <footer className="relative mt-16 md:mt-24 overflow-hidden bg-[#f5f5f5]">
-      <div className="relative mx-auto max-w-6xl px-4 md:px-6 lg:px-8">
-        {/* Restored the dynamic padding to allow the full watermark to show */}
-        <div className="relative pb-[clamp(8rem,35vw,22rem)]">
-          {/* Background Watermark */}
+    <footer className="relative bg-[#f5f5f5] pt-12 md:pt-20 pb-14 overflow-hidden px-6 md:px-12 lg:px-16 selection:bg-neutral-200">
+      <div className="mx-auto max-w-[1440px]">
+        <motion.div
+          variants={muiStaggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-40px" }}
+          className="flex flex-col"
+        >
+          {/* Top Divider Line (Desktop Only) */}
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 2, ease: slowEase }}
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center"
-            aria-hidden
+            variants={muiFadeUpItem}
+            className="hidden md:block w-full h-px bg-neutral-300/60 mb-12"
+          />
+
+          {/* Main Brand & Desktop Social Row */}
+          <div className="flex items-center justify-between w-full mb-8 md:mb-20">
+            {/* Left: Brand Logo */}
+            <motion.div variants={muiFadeUpItem} className="flex-shrink-0">
+              <Link
+                href="/"
+                className="inline-block outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded transition-transform duration-300 active:scale-95"
+                aria-label={SITE_NAME}
+              >
+                <Image
+                  src="/Lelogo.svg"
+                  alt={SITE_NAME}
+                  width={130}
+                  height={45}
+                  className="h-8 md:h-9 w-auto object-contain brightness-0"
+                  priority
+                />
+              </Link>
+            </motion.div>
+
+            {/* Center: Social Icons (Desktop Only) */}
+            <motion.div
+              variants={muiFadeUpItem}
+              className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2"
+            >
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-5 h-5 text-neutral-500 transition-all duration-300 ease-out hover:text-black hover:-translate-y-[2px] outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-sm"
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </motion.div>
+
+            {/* Right: Modern Styling Accents (Vertical Bars) */}
+            <motion.div
+              variants={muiFadeUpItem}
+              className="flex gap-[3.5px] items-center opacity-80"
+            >
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-[1.5px] h-6 bg-black" />
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Mobile Social List (Hidden on Desktop) */}
+          <motion.div
+            variants={muiFadeUpItem}
+            className="flex flex-col w-full md:hidden mb-12"
           >
-            <div className="relative w-full max-w-[72rem]">
-              <Image
-                src="/Lelogo.svg"
-                alt=""
-                width={1666}
-                height={360}
-                className="h-auto w-full select-none opacity-[0.85]"
-                priority={false}
-              />
-              <div
-                className="absolute inset-x-0 bottom-0 w-full h-[120%] bg-gradient-to-b from-transparent via-white/40 to-[#f5f5f5] backdrop-blur-2xl"
-                style={{
-                  maskImage: "linear-gradient(to bottom, transparent, black)",
-                }}
-              />
-            </div>
+            <div className="w-full h-px bg-neutral-200/80 mb-1" />
+            {socialLinks.map((social) => (
+              <a
+                key={social.name}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between py-[22px] border-b border-neutral-200/80 group active:opacity-70 transition-opacity"
+              >
+                <div className="flex items-center gap-5 text-neutral-900">
+                  <div className="w-[22px] h-[22px] flex items-center justify-center opacity-80">
+                    {social.icon}
+                  </div>
+                  <span className="text-[16px] font-medium tracking-tight">
+                    {social.name}
+                  </span>
+                </div>
+                <svg
+                  className="w-4 h-4 text-black"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </a>
+            ))}
           </motion.div>
 
-          {/* Main Dark Panel - Slimmer profile & Square on Mobile */}
+          {/* Bottom Row: Documentation Links & System Meta */}
           <motion.div
-            initial={{ opacity: 0, y: 20, filter: "blur(8px)", scale: 0.98 }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 1.2, ease: slowEase }}
-            className="relative z-10 overflow-hidden rounded-[2rem] bg-[#050505] shadow-[0_16px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-white/[0.08] md:rounded-[2.5rem] flex flex-col justify-between max-md:aspect-square"
+            variants={muiFadeUpItem}
+            className="flex flex-col items-center justify-center gap-4 md:gap-3.5 text-center px-2 md:px-0"
           >
-            {/* Ambient internal top glow */}
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-50" />
-
-            {/* Inner Content Wrapper */}
-            <div className="flex h-full flex-col justify-between px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12">
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-12"
-              >
-                {/* Brand Column */}
-                <motion.div variants={fadeUpItem} className="max-w-xs shrink-0">
+            {/* Horizontal Links Stack */}
+            <ul className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-1 gap-y-2 text-[14px] md:text-[13.5px] text-neutral-600 md:text-neutral-500/90 font-medium tracking-tight">
+              {bottomLinks.map((link, index) => (
+                <li key={link.label} className="flex items-center">
                   <Link
-                    href="/"
-                    className="inline-flex items-center outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
-                    aria-label={SITE_NAME}
+                    href={link.href}
+                    className="transition-colors duration-300 hover:text-black"
                   >
-                    <Image
-                      src="/Lelogo.svg"
-                      alt=""
-                      width={1666}
-                      height={360}
-                      className="h-10 w-auto invert max-w-auto object-contain brightness-0 invert"
-                    />
+                    {link.label}
                   </Link>
-                  <p className="mt-5 text-[13px] leading-relaxed text-neutral-400 antialiased max-md:line-clamp-3">
-                    Lowkey the future of fashion resale. We bring curated
-                    fashion, archived heat, and real finds into one seamless
-                    marketplace. - NGL
-                  </p>
-                </motion.div>
+                  {/* Bullets only show on desktop */}
+                  {index < bottomLinks.length - 1 && (
+                    <span className="hidden md:inline mx-2.5 text-neutral-400 select-none text-[11px]">
+                      •
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
 
-                {/* Links Grid */}
-                <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:flex-1">
-                  <div className="hidden sm:block"></div>
-                  <FooterLinkColumn title="Categories" links={categoryLinks} />
-                  <FooterLinkColumn title="Company" links={companyLinks} />
-                </div>
-              </motion.div>
-
-              {/* Bottom Legal Row */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, delay: 0.6, ease: slowEase }}
-                className="relative z-30 mt-8 flex flex-col gap-4 border-t border-white/[0.06] pt-6 sm:flex-row sm:items-center sm:justify-between md:mt-10 md:pt-8"
-              >
-                <p className="text-[12px] text-neutral-500 antialiased">
-                  © {year} {SITE_NAME}. All rights reserved.
-                </p>
-                <div className="flex flex-wrap gap-5 text-[12px] text-neutral-500 antialiased">
-                  <Link href="#" className="transition-colors hover:text-white">
-                    Terms of Service
-                  </Link>
-                  <Link href="#" className="transition-colors hover:text-white">
-                    Privacy Policy
-                  </Link>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Soft glow at panel bottom */}
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-black via-black/40 to-transparent"
-              aria-hidden
-            />
+            {/* Copyright Frame */}
+            <p className="text-[13px] md:text-[13.5px] text-neutral-500 md:text-neutral-400 font-medium md:font-normal tracking-tight select-none mt-2 md:mt-0">
+              Copyright &copy; {SITE_NAME} Foundation 2023-{year}
+            </p>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );
@@ -221,7 +259,7 @@ function SimpleFooter() {
           transition={{ duration: 1.2, ease: slowEase }}
           className="flex flex-col items-center gap-1.5"
         >
-          <span className="font-sans text-[12px]  tracking-[0.04em] text-neutral-400/90 antialiased transition-colors duration-500 hover:text-neutral-600 select-none">
+          <span className="font-sans text-[12px] tracking-[0.04em] text-neutral-400/90 antialiased transition-colors duration-500 hover:text-neutral-600 select-none">
             Thats all.
           </span>
           <span className="font-sans text-[12px] tracking-[0.04em] text-neutral-400/90 antialiased select-none">

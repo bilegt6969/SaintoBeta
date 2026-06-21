@@ -21,7 +21,7 @@ export default async function MainLayout({
         <ConditionalNavbar siteName={siteName} categories={categories} />
       </Suspense>
       <ConditionalPadding>{children}</ConditionalPadding>
-      <Footer siteName={siteName} categories={categories} />
+      <Footer siteName={siteName} />
     </>
   );
 }

@@ -29,7 +29,7 @@ const textVariants = {
 
 export default function BlogPage() {
   return (
-    <main className="relative h-[calc(100vh-68px-40px-280px)] overflow-hidden bg-[#f5f5f5] flex flex-col items-center justify-center px-6 font-sans antialiased z-0">
+    <main className="relative h-[calc(100vh-68px-40px-280px)] overflow-hidden bg-white flex flex-col items-center justify-center px-6 font-sans antialiased z-0">
       {/* Animated Blurry Background Orbs */}
       <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
         <motion.div
@@ -68,9 +68,9 @@ export default function BlogPage() {
         {/* Editorial Eyebrow */}
         <motion.h2
           variants={textVariants}
-          className="text-[#86868B] text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.1em] mb-6"
+          className="text-[#86868B] text-[11px] sm:text-[12px] font-medium tracking-[0.08em] mb-6"
         >
-          Sainto Blog
+          Blog
         </motion.h2>
 
         {/* The Statement */}

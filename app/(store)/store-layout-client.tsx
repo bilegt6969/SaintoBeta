@@ -20,5 +20,5 @@ export function StoreLayoutClient({
 
   if (hideFooter) return null;
 
-  return <Footer siteName={siteName} categories={categories} />;
+  return <Footer siteName={siteName} />;
 }
