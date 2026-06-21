@@ -466,6 +466,9 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
 export async function getProductRecommendations(
   productId: string,
   productTags?: string[],
+  productCategory?: string,
+  productTitle?: string,
+  productDescription?: string,
 ): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
@@ -481,26 +484,61 @@ export async function getProductRecommendations(
     .map((doc) => mapSanityProduct(doc))
     .filter((product): product is Product => Boolean(product));
 
-  // If no tags provided, return empty array
-  if (!productTags || productTags.length === 0) {
+  // If no criteria provided, return empty array
+  if (
+    !productTags ||
+    productTags.length === 0 ||
+    !productCategory ||
+    !productTitle
+  ) {
     return [];
   }
 
-  // Filter products that have at least one matching tag
-  const similarProducts = products.filter((product) => {
+  // Extract words from title and description for matching
+  const currentWords = new Set(
+    [
+      ...productTitle.toLowerCase().split(/\s+/),
+      ...(productDescription?.toLowerCase().split(/\s+/) || []),
+    ].filter((word) => word.length > 3),
+  );
+
+  // Score products based on multiple factors
+  const scoredProducts = products.map((product) => {
+    let score = 0;
+
+    // Tag matching (highest priority)
     const productTagSet = new Set(product.tags.map((tag) => tag.toLowerCase()));
     const currentTagSet = new Set(productTags.map((tag) => tag.toLowerCase()));
+    const matchingTags = [...currentTagSet].filter((tag) =>
+      productTagSet.has(tag),
+    );
+    score += matchingTags.length * 10;
 
-    // Check if any tag matches
-    for (const tag of currentTagSet) {
-      if (productTagSet.has(tag)) {
-        return true;
-      }
+    // Category matching (medium priority)
+    if (product.categoryHandle === productCategory) {
+      score += 5;
     }
-    return false;
+
+    // Repeated words in title/description (lower priority)
+    const productWords = new Set(
+      [
+        ...product.title.toLowerCase().split(/\s+/),
+        ...(product.description?.toLowerCase().split(/\s+/) || []),
+      ].filter((word) => word.length > 3),
+    );
+    const matchingWords = [...currentWords].filter((word) =>
+      productWords.has(word),
+    );
+    score += matchingWords.length * 2;
+
+    return { product, score };
   });
 
-  return similarProducts.slice(0, 4);
+  // Sort by score and return top 4
+  return scoredProducts
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map((item) => item.product);
 }
 
 export async function getProducts({

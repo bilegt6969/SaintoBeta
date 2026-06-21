@@ -16,7 +16,8 @@ export function StoreLayoutClient({
   categories,
 }: StoreLayoutClientProps) {
   const pathname = usePathname();
-  const hideFooter = pathname === "/sign-in" || pathname === "/signup";
+  const hideFooter =
+    pathname === "/sign-in" || pathname === "/signup" || pathname === "/search";
 
   if (hideFooter) return null;
 

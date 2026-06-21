@@ -91,7 +91,10 @@ const muiFadeUpItem = {
 
 // --- Components ---
 
-function HomeFooter({ siteName }: FooterProps) {
+function HomeFooter({
+  siteName,
+  useWhiteBg,
+}: FooterProps & { useWhiteBg?: boolean }) {
   const SITE_NAME = siteName || SITE_NAME_DEFAULT;
   const [mounted, setMounted] = useState(false);
 
@@ -102,8 +105,11 @@ function HomeFooter({ siteName }: FooterProps) {
   const year = mounted ? new Date().getFullYear() : 2026;
 
   return (
-    <footer className="relative bg-[#f5f5f5] pt-12 md:pt-20 pb-14 overflow-hidden px-6 md:px-12 lg:px-16 selection:bg-neutral-200">
-      <div className="mx-auto max-w-[1440px]">
+    <>
+      <footer
+        className={`relative overflow-hidden selection:bg-neutral-200 border-t-1 border-gray-200 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"}`}
+      >
+        <div className="" />
         <motion.div
           variants={muiStaggerContainer}
           initial="hidden"
@@ -111,140 +117,139 @@ function HomeFooter({ siteName }: FooterProps) {
           viewport={{ once: true, margin: "-40px" }}
           className="flex flex-col"
         >
-          {/* Top Divider Line (Desktop Only) */}
-          <motion.div
-            variants={muiFadeUpItem}
-            className="hidden md:block w-full h-px bg-neutral-300/60 mb-12"
-          />
+          {/* Inner Content Container */}
+          <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12 lg:px-16 pt-4 md:pt-6 pb-5 md:pb-6">
+            {/* Main Brand & Desktop Social Row */}
+            <div className="flex items-center justify-between w-full mb-4 md:mb-8">
+              {/* Left: Brand Logo */}
+              <motion.div variants={muiFadeUpItem} className="flex-shrink-0">
+                <Link
+                  href="/"
+                  className="inline-block outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded transition-transform duration-300 active:scale-95"
+                  aria-label={SITE_NAME}
+                >
+                  <Image
+                    src="/Lelogo.svg"
+                    alt={SITE_NAME}
+                    width={130}
+                    height={45}
+                    className="h-7 md:h-8 w-auto object-contain brightness-0"
+                    priority
+                  />
+                </Link>
+              </motion.div>
 
-          {/* Main Brand & Desktop Social Row */}
-          <div className="flex items-center justify-between w-full mb-8 md:mb-20">
-            {/* Left: Brand Logo */}
-            <motion.div variants={muiFadeUpItem} className="flex-shrink-0">
-              <Link
-                href="/"
-                className="inline-block outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded transition-transform duration-300 active:scale-95"
-                aria-label={SITE_NAME}
+              {/* Center: Social Icons (Desktop Only) */}
+              <motion.div
+                variants={muiFadeUpItem}
+                className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2"
               >
-                <Image
-                  src="/Lelogo.svg"
-                  alt={SITE_NAME}
-                  width={130}
-                  height={45}
-                  className="h-8 md:h-9 w-auto object-contain brightness-0"
-                  priority
-                />
-              </Link>
-            </motion.div>
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-5 h-5 text-neutral-500 transition-all duration-300 ease-out hover:text-black hover:-translate-y-[2px] outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-sm"
+                    aria-label={social.name}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </motion.div>
 
-            {/* Center: Social Icons (Desktop Only) */}
+              {/* Right: Modern Styling Accents (Vertical Bars) */}
+              <motion.div
+                variants={muiFadeUpItem}
+                className="flex gap-[3.5px] items-center opacity-80"
+              >
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-[1.5px] h-5 md:h-6 bg-black" />
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Mobile Social List (Hidden on Desktop) */}
             <motion.div
               variants={muiFadeUpItem}
-              className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2"
+              className="flex flex-col w-full md:hidden mb-5"
             >
+              <div className="w-full h-px bg-neutral-200/80 mb-1" />
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-5 h-5 text-neutral-500 transition-all duration-300 ease-out hover:text-black hover:-translate-y-[2px] outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 rounded-sm"
-                  aria-label={social.name}
+                  className="flex items-center justify-between py-[12px] border-b border-neutral-200/80 group active:opacity-70 transition-opacity"
                 >
-                  {social.icon}
+                  <div className="flex items-center gap-4 text-neutral-900">
+                    <div className="w-[20px] h-[20px] flex items-center justify-center opacity-80">
+                      {social.icon}
+                    </div>
+                    <span className="text-[15px] font-medium tracking-tight">
+                      {social.name}
+                    </span>
+                  </div>
+                  <svg
+                    className="w-4 h-4 text-black"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
                 </a>
               ))}
             </motion.div>
 
-            {/* Right: Modern Styling Accents (Vertical Bars) */}
+            {/* Bottom Row: Documentation Links & System Meta */}
             <motion.div
               variants={muiFadeUpItem}
-              className="flex gap-[3.5px] items-center opacity-80"
+              className="flex flex-col items-center justify-center gap-3 md:gap-3.5 text-center px-2 md:px-0"
             >
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-[1.5px] h-6 bg-black" />
-              ))}
+              {/* Horizontal Links Stack */}
+              <ul className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-1 gap-y-2 text-[13px] md:text-[13.5px] text-neutral-600 md:text-neutral-500/90 font-medium tracking-tight">
+                {bottomLinks.map((link, index) => (
+                  <li key={link.label} className="flex items-center">
+                    <Link
+                      href={link.href}
+                      className="transition-colors duration-300 hover:text-black"
+                    >
+                      {link.label}
+                    </Link>
+                    {/* Bullets only show on desktop */}
+                    {index < bottomLinks.length - 1 && (
+                      <span className="hidden md:inline mx-2.5 text-neutral-400 select-none text-[11px]">
+                        •
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Copyright Frame */}
+              <p className="text-[12px] md:text-[13px] text-neutral-500 md:text-neutral-400 font-medium md:font-normal tracking-tight select-none mt-1 md:mt-0">
+                Copyright &copy; {SITE_NAME} by bytecode 2025-{year}
+              </p>
             </motion.div>
           </div>
-
-          {/* Mobile Social List (Hidden on Desktop) */}
-          <motion.div
-            variants={muiFadeUpItem}
-            className="flex flex-col w-full md:hidden mb-12"
-          >
-            <div className="w-full h-px bg-neutral-200/80 mb-1" />
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-[22px] border-b border-neutral-200/80 group active:opacity-70 transition-opacity"
-              >
-                <div className="flex items-center gap-5 text-neutral-900">
-                  <div className="w-[22px] h-[22px] flex items-center justify-center opacity-80">
-                    {social.icon}
-                  </div>
-                  <span className="text-[16px] font-medium tracking-tight">
-                    {social.name}
-                  </span>
-                </div>
-                <svg
-                  className="w-4 h-4 text-black"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </a>
-            ))}
-          </motion.div>
-
-          {/* Bottom Row: Documentation Links & System Meta */}
-          <motion.div
-            variants={muiFadeUpItem}
-            className="flex flex-col items-center justify-center gap-4 md:gap-3.5 text-center px-2 md:px-0"
-          >
-            {/* Horizontal Links Stack */}
-            <ul className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-1 gap-y-2 text-[14px] md:text-[13.5px] text-neutral-600 md:text-neutral-500/90 font-medium tracking-tight">
-              {bottomLinks.map((link, index) => (
-                <li key={link.label} className="flex items-center">
-                  <Link
-                    href={link.href}
-                    className="transition-colors duration-300 hover:text-black"
-                  >
-                    {link.label}
-                  </Link>
-                  {/* Bullets only show on desktop */}
-                  {index < bottomLinks.length - 1 && (
-                    <span className="hidden md:inline mx-2.5 text-neutral-400 select-none text-[11px]">
-                      •
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            {/* Copyright Frame */}
-            <p className="text-[13px] md:text-[13.5px] text-neutral-500 md:text-neutral-400 font-medium md:font-normal tracking-tight select-none mt-2 md:mt-0">
-              Copyright &copy; {SITE_NAME} Foundation 2023-{year}
-            </p>
-          </motion.div>
         </motion.div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 
-function SimpleFooter() {
+function SimpleFooter({ useWhiteBg }: { useWhiteBg?: boolean }) {
   return (
-    <footer className="relative w-full overflow-hidden bg-[#f5f5f5] pb-15 pt-20">
+    <footer
+      className={`relative w-full overflow-hidden pb-6 pt-8 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"}`}
+    >
       <motion.div
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-neutral-200/50 via-white/0 to-white/0"
         animate={{ opacity: [0.3, 0.7, 0.3], scale: [0.95, 1.05, 0.95] }}
@@ -276,10 +281,18 @@ export default function Footer({ siteName }: FooterProps) {
 
   const isCategoryPage = pathname?.startsWith("/category");
   const isSearchPage = pathname === "/search";
+  const isAboutPage = pathname === "/about";
+  const isBlogPage = pathname === "/blog";
+  const isContactPage = pathname === "/contact";
+  const isProductPage = pathname?.startsWith("/product/");
+
+  // Pages with white background
+  const useWhiteBg =
+    isAboutPage || isBlogPage || isContactPage || isProductPage;
 
   return isCategoryPage || isSearchPage ? (
-    <SimpleFooter />
+    <SimpleFooter useWhiteBg={useWhiteBg} />
   ) : (
-    <HomeFooter siteName={siteName} />
+    <HomeFooter siteName={siteName} useWhiteBg={useWhiteBg} />
   );
 }

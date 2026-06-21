@@ -2,8 +2,9 @@
 
 import { Easing, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
-// Smooth Apple-like easing
+// Smooth Apple-like easing (Do not touch)
 const customEase: Easing = [0.16, 1, 0.3, 1] as const;
 
 const containerVariants = {
@@ -55,13 +56,15 @@ const manifestoText = [
   "But the idea stays the same.",
   "Finding cool stuff should not feel like a side quest.",
   "Thanks for stopping by.",
-  "-Bilegt Amartuvshin, Stanford '30",
+  "-Bilegt Amartuvshin, CWRU '30",
 ];
 
 export default function AboutPage() {
   return (
-    <main className="relative min-h-screen bg-[#F5F5F7] flex flex-col items-center pt-2 pb-16 px-6 font-sans antialiased selection:bg-neutral-300 overflow-hidden z-0">
-      {/* Animated Blurry Background Orbs (Glassmorphism Effect) */}
+    <main className="relative min-h-screen bg-white flex flex-col items-center pt-1 pb-24 px-6 font-sans antialiased selection:bg-neutral-200 overflow-hidden z-0">
+      {/* Solid white background behind navbar */}
+      <div className="fixed inset-x-0 top-0 z-[-1] h-32 bg-white" />
+      {/* Animated Blurry Background Orbs (Glassmorphism Effect - Kept intact) */}
       <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -73,7 +76,7 @@ export default function AboutPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-[10%] left-[20%] w-[400px] h-[400px] bg-neutral-300/40 rounded-full blur-[80px]"
+          className="absolute top-[10%] left-[20%] w-[400px] h-[400px] bg-neutral-100/70 rounded-full blur-[80px]"
         />
         <motion.div
           animate={{
@@ -85,7 +88,7 @@ export default function AboutPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute bottom-[20%] right-[15%] w-[500px] h-[500px] bg-neutral-200/50 rounded-full blur-[100px]"
+          className="absolute bottom-[20%] right-[15%] w-[500px] h-[500px] bg-neutral-50 rounded-full blur-[100px]"
         />
       </div>
 
@@ -93,55 +96,70 @@ export default function AboutPage() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-[640px] flex flex-col relative z-10 pb-12"
+        className="w-full max-w-[580px] flex flex-col relative z-10 pb-12"
       >
-        {/* 1920x1080 Image Container */}
+        {/* Cover Image Container */}
         <motion.div
           variants={imageVariants}
-          className="relative w-full aspect-square bg-[#E5E5EA] rounded-[24px] sm:rounded-[32px] overflow-hidden mb-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+          className="relative w-full aspect-square bg-[#F5F5F7] rounded-[20px] overflow-hidden mb-16 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
         >
           <Image
             src="https://i.pinimg.com/736x/e3/42/2c/e3422ceeb1978a79f5b3219d6a8bc46a.jpg"
             alt="Sainto Cover"
             fill
             priority
-            sizes="(max-w-[640px]) 100vw, 640px"
+            sizes="(max-w-[580px]) 100vw, 580px"
             className="object-cover"
           />
-          {/* Subtle inner shadow overlay */}
-          <div className="absolute inset-0 border border-black/5 pointer-events-none rounded-[24px] sm:rounded-[32px]" />
+          <div className="absolute inset-0 border border-black/[0.03] pointer-events-none rounded-[20px]" />
         </motion.div>
 
-        {/* Text Content */}
-        <article className="flex flex-col w-full pl-1 sm:pl-2">
-          {/* Eyebrow text matching the reference image */}
-          <motion.h2
-            variants={textVariants}
-            className="text-[#86868B] text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.1em] mb-4"
-          >
-            A Letter From The Founder
-          </motion.h2>
-
+        {/* Content Restructured to Match Provided Design System Aesthetic */}
+        <article className="flex flex-col w-full px-1">
+          {/* Main bold greeting style directly from the screenshot */}
           <motion.h1
             variants={textVariants}
-            className="text-[#1D1D1F] text-[38px] sm:text-[46px] font-semibold tracking-[-0.04em] mb-10 leading-none"
+            className="text-[#151516e3] text-[22px] sm:text-[24px] font-semibold tracking-tight mb-6"
           >
             Dear visitor,
           </motion.h1>
 
-          {/* Letter-inspired Serif body text */}
-          <div className="font-serif text-[17px] sm:text-[19px] leading-[1.65] flex flex-col gap-6 text-[#515154]">
+          {/* Clean, high-contrast minimalist sans-serif layout mirroring the image layout */}
+          <div className="font-sans text-[16px] sm:text-[17px] leading-[1.65] flex flex-col gap-5 text-[#86868B] font-normal tracking-normal">
             {manifestoText.map((text, i) => {
-              const isSignOff = i >= manifestoText.length - 2;
+              const isLast = i === manifestoText.length - 1;
+              const isThanks = i === manifestoText.length - 2;
+
+              // Renders the founder sign-off using the exact underline layout treatment from the image
+              if (isLast) {
+                const cleanName = text.replace("-", "");
+                return (
+                  <motion.p
+                    variants={textVariants}
+                    key={i}
+                    className="text-[#86868B] text-[16px] sm:text-[17px] mt-8 font-normal tracking-normal"
+                  >
+                    <span style={{ fontStyle: "oblique 18deg" }}>
+                      From{" "}
+                      <Link
+                        href="https://www.instagram.com/bilegtaamartuvshin/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-1 underline-offset-4 text-black font-medium hover:opacity-70 transition-opacity"
+                      >
+                        {cleanName}
+                      </Link>
+                    </span>
+                  </motion.p>
+                );
+              }
 
               return (
                 <motion.p
                   variants={textVariants}
                   key={i}
                   className={
-                    isSignOff
-                      ? "text-[#1D1D1F] italic mt-2 font-medium"
-                      : "max-w-[96%]"
+                    isThanks ? "text-black/80 font-medium mt-2" : "max-w-[96%]"
                   }
                 >
                   {text}

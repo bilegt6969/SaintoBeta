@@ -5,17 +5,17 @@ import { ProductGridShell } from "components/home/product-grid-shell";
 import LiteFooter from "components/layout/lite-footer";
 import { SearchBar } from "components/search/search-bar";
 import {
-    fadeUpVariants,
-    gridItemVariants,
-    pageVariants,
-    searchBarVariants,
-    searchEase,
-    searchSpring,
-    useSearchMotion,
+  fadeUpVariants,
+  gridItemVariants,
+  pageVariants,
+  searchBarVariants,
+  searchEase,
+  searchSpring,
+  useSearchMotion,
 } from "components/search/search-motion";
 import {
-    SearchProductCard,
-    SearchProductCardSkeleton,
+  SearchProductCard,
+  SearchProductCardSkeleton,
 } from "components/search/search-product-card";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "lib/cn";
@@ -309,10 +309,7 @@ export function SearchPageClient({
         className="mx-auto flex max-w-[1600px] flex-col items-center gap-2 pb-2 pt-6 text-center md:pb-4 md:pt-8"
         layout
       >
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-          Discover
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 md:text-4xl">
+        <h1 className="text-3xl font-semibold tracking-tighter text-neutral-900 md:text-4xl">
           Search
         </h1>
       </motion.div>
@@ -412,22 +409,25 @@ export function SearchPageClient({
   );
 
   return (
-    <div className="relative min-h-[70vh] bg-white font-sans text-neutral-950 overflow-hidden">
-      {shouldAnimate ? (
-        <motion.div
-          className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8 lg:px-10"
-          variants={pageVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {pageInner}
-        </motion.div>
-      ) : (
-        <div className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8 lg:px-10">
-          {pageInner}
-        </div>
-      )}
-      <LiteFooter />
-    </div>
+    <>
+      <div className="fixed inset-0 bg-white -z-10" />
+      <div className="relative min-h-[70vh] font-sans text-neutral-950 overflow-hidden">
+        {shouldAnimate ? (
+          <motion.div
+            className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8 lg:px-10"
+            variants={pageVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {pageInner}
+          </motion.div>
+        ) : (
+          <div className="mx-auto max-w-[1600px] px-4 pb-24 md:px-8 lg:px-10">
+            {pageInner}
+          </div>
+        )}
+        <LiteFooter />
+      </div>
+    </>
   );
 }

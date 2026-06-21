@@ -2,7 +2,7 @@ import { Gallery } from "components/product/gallery";
 import { KeyIngredientsSection } from "components/product/key-ingredients-section";
 import { ProductDescription } from "components/product/product-description";
 import { ProductPageWrapper } from "components/product/product-page-wrapper";
-import { ProductPillCard } from "components/product/product-pill-card";
+import { RelatedProductsScroll } from "components/product/related-products-scroll";
 import type { Image } from "lib/commerce";
 import { getProduct, getProductRecommendations } from "lib/commerce";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
@@ -132,35 +132,53 @@ async function ProductContent({
       ) : null}
 
       <Suspense fallback={null}>
-        <RelatedProducts id={product.id} />
+        <RelatedProducts
+          id={product.id}
+          tags={product.tags}
+          categoryHandle={product.categoryHandle}
+          title={product.title}
+          description={product.description}
+        />
       </Suspense>
     </>
   );
 }
 
-async function RelatedProducts({ id }: { id: string }) {
-  const relatedProducts = await getProductRecommendations(id);
+async function RelatedProducts({
+  id,
+  tags,
+  categoryHandle,
+  title,
+  description,
+}: {
+  id: string;
+  tags: string[];
+  categoryHandle?: string;
+  title: string;
+  description?: string;
+}) {
+  const relatedProducts = await getProductRecommendations(
+    id,
+    tags,
+    categoryHandle,
+    title,
+    description,
+  );
 
   if (!relatedProducts.length) return null;
 
   return (
     <section className="mt-20 border-t border-neutral-100 pt-16 md:mt-24 lg:pt-20">
       <div className="mb-10 flex flex-col gap-2 text-center items-center justify-center">
-        <h2 className="text-[10px] font-bold tracking-[0.2em] text-neutral-400 uppercase">
+        <h2 className="text-[12px] font-medium tracking-[0.08em] text-neutral-400 ">
           Curated for you
         </h2>
-        <h3 className="text-3xl font-semibold tracking-tight text-neutral-900">
+        <h3 className="text-3xl font-semibold tracking-tighter text-neutral-900">
           You may also like
         </h3>
       </div>
 
-      <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {relatedProducts.map((product, index) => (
-          <li key={product.handle}>
-            <ProductPillCard product={product} priority={index < 3} />
-          </li>
-        ))}
-      </ul>
+      <RelatedProductsScroll products={relatedProducts} />
     </section>
   );
 }

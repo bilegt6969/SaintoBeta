@@ -109,7 +109,7 @@ export function ProductDescriptionInner({ product }: { product: Product }) {
       {/* Specifications Grid mapped from Sanity `specs` */}
       {product.specs && product.specs.length > 0 && (
         <div className="pt-4">
-          <h2 className="mb-6 text-[11px] font-medium tracking-[0.05em] text-neutral-400 uppercase">
+          <h2 className="mb-6 text-[11px] font-semibold tracking-[0.05em] text-neutral-600/80 uppercase">
             Specifications
           </h2>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">

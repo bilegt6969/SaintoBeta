@@ -1,6 +1,10 @@
 "use client";
 
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+} from "firebase/auth";
 import { motion } from "framer-motion";
 import { auth, googleProvider } from "lib/firebase";
 import Link from "next/link";
@@ -46,15 +50,24 @@ function AuthNavbar() {
   );
 }
 
-function SignInContent() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
-  const [resetSent, setResetSent] = useState(false);
-  const [resetError, setResetError] = useState("");
-  const [showReset, setShowReset] = useState(false);
+function SignInContent({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  error,
+  setError,
+  loading,
+  setLoading,
+  resetEmail,
+  setResetEmail,
+  resetSent,
+  setResetSent,
+  resetError,
+  setResetError,
+  showReset,
+  setShowReset,
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next") || "/";
@@ -253,6 +266,82 @@ function SignInContent() {
           Sign up
         </Link>
       </p>
+    </motion.div>
+  );
+}
+
+export default function SignInPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSent, setResetSent] = useState(false);
+  const [resetError, setResetError] = useState("");
+  const [showReset, setShowReset] = useState(false);
+
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    setResetError("");
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetSent(true);
+    } catch (err) {
+      console.error("Password reset error:", err);
+      setResetError(
+        err instanceof Error ? err.message : "Failed to send reset email.",
+      );
+    }
+  };
+
+  return (
+    <>
+      <AuthNavbar />
+      <Suspense
+        fallback={
+          <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 py-16">
+            <svg
+              className="h-6 w-6 animate-spin text-neutral-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </div>
+        }
+      >
+        <SignInContent
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          error={error}
+          setError={setError}
+          loading={loading}
+          setLoading={setLoading}
+          resetEmail={resetEmail}
+          setResetEmail={setResetEmail}
+          resetSent={resetSent}
+          setResetSent={setResetSent}
+          resetError={resetError}
+          setResetError={setResetError}
+          showReset={showReset}
+          setShowReset={setShowReset}
+        />
+      </Suspense>
 
       {/* Password Reset Modal */}
       {showReset && (
@@ -260,7 +349,7 @@ function SignInContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
           onClick={() => setShowReset(false)}
         >
           <motion.div
@@ -345,42 +434,6 @@ function SignInContent() {
           </motion.div>
         </motion.div>
       )}
-    </motion.div>
-  );
-}
-
-export default function SignInPage() {
-  return (
-    <>
-      <AuthNavbar />
-      <Suspense
-        fallback={
-          <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 py-16">
-            <svg
-              className="h-6 w-6 animate-spin text-neutral-400"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          </div>
-        }
-      >
-        <SignInContent />
-      </Suspense>
     </>
   );
 }
