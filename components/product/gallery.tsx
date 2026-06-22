@@ -92,8 +92,15 @@ export function Gallery({
   const [revealedSrcs, setRevealedSrcs] = useState<Set<string>>(new Set());
 
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const toggleFullscreen = useCallback(() => {
@@ -265,20 +272,8 @@ export function Gallery({
               if (easterEggClicks >= 5) setEasterEggClicks(0);
             }}
           >
-            <AnimatePresence
-              initial={false}
-              custom={direction}
-              mode="popLayout"
-            >
-              <motion.div
-                key={imageIndex}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="absolute inset-0"
-              >
+            {isMobile ? (
+              <div className="absolute inset-0">
                 {needsEffect ? (
                   <StableImageEffect
                     src={images[imageIndex]!.src}
@@ -300,8 +295,46 @@ export function Gallery({
                     quality={90}
                   />
                 )}
-              </motion.div>
-            </AnimatePresence>
+              </div>
+            ) : (
+              <AnimatePresence
+                initial={false}
+                custom={direction}
+                mode="popLayout"
+              >
+                <motion.div
+                  key={imageIndex}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="absolute inset-0"
+                >
+                  {needsEffect ? (
+                    <StableImageEffect
+                      src={images[imageIndex]!.src}
+                      altText={images[imageIndex]!.altText}
+                    />
+                  ) : (
+                    <Image
+                      className={clsx(
+                        "h-full w-full",
+                        isFullscreen
+                          ? "object-contain"
+                          : "object-cover rounded-[2.5rem]",
+                      )}
+                      fill
+                      sizes="(min-width: 1024px) 45vw, (min-width: 640px) 80vw, 100vw"
+                      alt={images[imageIndex]!.altText}
+                      src={images[imageIndex]!.src}
+                      priority
+                      quality={90}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            )}
 
             {hasMultiple && (
               <>
