@@ -82,6 +82,7 @@ export type Product = {
   availableForSale: boolean;
   outOfStock?: boolean;
   brand: string;
+  categories?: string[];
   categoryHandle?: string;
   categoryTitle?: string;
   condition?: string;

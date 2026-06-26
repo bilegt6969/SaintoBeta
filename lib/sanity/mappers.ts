@@ -87,6 +87,7 @@ type SanityProduct = {
   _id: string;
   _updatedAt: string;
   brand?: string;
+  category?: string[];
   categoryHandle?: string;
   categoryTitle?: string;
   condition?: string;
@@ -160,7 +161,7 @@ type SanityHomeConfig = {
   _id: string;
   featuredProducts?: SanityProduct[];
   categorySections?: {
-    category?: SanityCategoryPage;
+    category?: string;
     enabled?: boolean;
     sortOrder?: number;
   }[];
@@ -360,14 +361,38 @@ export function mapSanityProduct(
       values: option.values ?? [],
     })) ?? [];
 
+  // Handle category - ensure it's always a string (use first category from array)
+  let categoryHandle = doc.categoryHandle;
+  let categoryTitle = doc.categoryTitle;
+
+  // If category is an array, use the first element
+  if (doc.category && Array.isArray(doc.category) && doc.category.length > 0) {
+    categoryHandle = doc.category[0];
+    categoryTitle = doc.category[0];
+  }
+
+  // If categoryHandle is an object (reference), extract the string value
+  if (categoryHandle && typeof categoryHandle === "object") {
+    categoryHandle = (categoryHandle as any)._ref || String(categoryHandle);
+  }
+  if (categoryTitle && typeof categoryTitle === "object") {
+    categoryTitle = (categoryTitle as any)._ref || String(categoryTitle);
+  }
+
+  // Ensure they are strings
+  categoryHandle = typeof categoryHandle === "string" ? categoryHandle : "";
+  categoryTitle =
+    typeof categoryTitle === "string" ? categoryTitle : categoryHandle;
+
   return {
     id: doc._id,
     handle: doc.slug.current,
     availableForSale: doc.availableForSale ?? true,
     outOfStock: doc.outOfStock,
     brand: doc.brand || "",
-    categoryHandle: doc.categoryHandle,
-    categoryTitle: doc.categoryTitle,
+    categories: doc.category,
+    categoryHandle,
+    categoryTitle,
     condition: doc.condition,
     title: doc.title,
     description: doc.description || "",

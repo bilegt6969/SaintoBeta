@@ -28,6 +28,18 @@ export function getProductBrand(product: Product): string {
 }
 
 export function getProductCategory(product: Product): string {
+  // If product has categories array, join them with +
+  if (
+    product.categories &&
+    Array.isArray(product.categories) &&
+    product.categories.length > 0
+  ) {
+    return product.categories
+      .map((cat) => cat.charAt(0).toUpperCase() + cat.slice(1))
+      .join(" + ");
+  }
+
+  // Fallback to categoryTitle
   if (product.categoryTitle) {
     return product.categoryTitle;
   }

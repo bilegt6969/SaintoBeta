@@ -15,11 +15,13 @@ interface Props {
 
 export default function MobileMenu({ isOpen, setIsOpen, categories }: Props) {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isCompaniesOpen, setIsCompaniesOpen] = useState(false);
 
   const handleClose = () => {
     setIsOpen(false);
     setTimeout(() => {
       setIsCategoriesOpen(false);
+      setIsCompaniesOpen(false);
     }, 300);
   };
 
@@ -111,6 +113,60 @@ export default function MobileMenu({ isOpen, setIsOpen, categories }: Props) {
                         <div className="overflow-hidden">
                           <ul className="flex flex-col gap-4">
                             {categories.map((item) => (
+                              <li key={item.href}>
+                                <Link
+                                  href={item.href}
+                                  onClick={handleClose}
+                                  className="text-[20px] font-medium text-neutral-800 transition-colors hover:text-neutral-500"
+                                >
+                                  {item.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  {/* Companies Accordion */}
+                  <li className="border-b border-neutral-200/70 px-6 py-5">
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => setIsCompaniesOpen(!isCompaniesOpen)}
+                        className="flex w-full items-center justify-between text-left text-[26px] font-semibold tracking-tight text-black"
+                      >
+                        Company
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 transition-colors hover:bg-neutral-200">
+                          {isCompaniesOpen ? (
+                            <Minus
+                              className="h-4 w-4 text-black"
+                              strokeWidth={2.5}
+                            />
+                          ) : (
+                            <Plus
+                              className="h-4 w-4 text-black"
+                              strokeWidth={2.5}
+                            />
+                          )}
+                        </span>
+                      </button>
+
+                      {/* Accordion Content */}
+                      <div
+                        className={`grid transition-all duration-300 ease-in-out ${
+                          isCompaniesOpen
+                            ? "grid-rows-[1fr] pt-5 opacity-100"
+                            : "grid-rows-[0fr] opacity-0"
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <ul className="flex flex-col gap-4">
+                            {[
+                              { label: "About", href: "/about" },
+                              { label: "Blog", href: "/blog" },
+                              { label: "Contact", href: "/contact" },
+                            ].map((item) => (
                               <li key={item.href}>
                                 <Link
                                   href={item.href}

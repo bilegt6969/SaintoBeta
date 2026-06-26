@@ -26,12 +26,28 @@ export const product = defineType({
     }),
     defineField({
       name: "category",
-      title: "Category",
-      type: "reference",
-      to: [{ type: "categoryPage" }],
+      title: "Categories",
+      type: "array",
+      of: [{ type: "string" }],
+      options: {
+        list: [
+          { title: "Sneakers", value: "sneakers" },
+          { title: "Clothes", value: "clothes" },
+          { title: "Accessories", value: "accessories" },
+          { title: "Carry", value: "carry" },
+          { title: "Watches", value: "watches" },
+          { title: "Lifestyle", value: "lifestyle" },
+          { title: "Fragrance", value: "fragrance" },
+          { title: "Home", value: "home" },
+          { title: "Tech", value: "tech" },
+          { title: "Heritage", value: "heritage" },
+          { title: "Art", value: "art" },
+          { title: "Beauty", value: "beauty" },
+        ],
+      },
       description:
-        "Which category page this product belongs to. It will appear on that category page automatically.",
-      validation: (rule) => rule.required(),
+        "Select one or more categories for this product. It will appear in those category filters on the homepage.",
+      validation: (rule) => rule.required().min(1),
     }),
     defineField({
       name: "price",
@@ -237,8 +253,15 @@ export const product = defineType({
   preview: {
     select: {
       title: "title",
-      subtitle: "category.title",
+      subtitle: "category",
       media: "images.0",
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title,
+        subtitle: subtitle ? `Category: ${subtitle}` : undefined,
+        media,
+      };
     },
   },
 });

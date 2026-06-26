@@ -76,7 +76,7 @@ interface HeroSlide {
 }
 
 interface HeroProps {
-  hero: HeroContent & {
+  hero?: HeroContent & {
     slides?: HeroSlide[];
     carouselSettings?: {
       autoplay?: boolean;
@@ -91,7 +91,7 @@ interface HeroProps {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function Hero({ hero }: HeroProps) {
-  if (!hero.enabled) return null;
+  if (!hero || !hero.enabled) return null;
 
   const slides: HeroSlide[] = hero.slides?.length
     ? hero.slides

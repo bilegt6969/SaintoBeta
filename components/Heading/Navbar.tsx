@@ -171,7 +171,10 @@ export default function Navbar({
                     <div className="island-inset flex h-8 items-center gap-1.5 rounded-full bg-white px-3 text-[13px] font-medium text-neutral-800 transition-opacity hover:opacity-80 sm:px-3.5 sm:text-sm">
                       <button
                         type="button"
-                        onClick={() => setIsSearchOpen(true)}
+                        onClick={() => {
+                          setIsOpen(false);
+                          setIsSearchOpen(true);
+                        }}
                         className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0 text-inherit"
                         aria-label="Search"
                       >
@@ -200,7 +203,10 @@ export default function Navbar({
 
                 <button
                   type="button"
-                  onClick={() => setIsOpen((prev) => !prev)}
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setIsOpen((prev) => !prev);
+                  }}
                   className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-black/5 lg:hidden"
                   aria-label={isOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isOpen}

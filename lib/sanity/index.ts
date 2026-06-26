@@ -46,8 +46,8 @@ const productFields = `
   "slug": slug,
   brand,
   category,
-  "categoryHandle": category->slug.current,
-  "categoryTitle": category->title,
+  "categoryHandle": category[0],
+  "categoryTitle": category[0],
   condition,
   price,
   description,
@@ -143,13 +143,13 @@ const categoryPagesQuery = `*[_type == "categoryPage"] | order(homeSortOrder asc
 
 const categoryPageByHandleQuery = `*[_type == "categoryPage" && slug.current == $handle][0]{${categoryPageFields}}`;
 
-const productsByCategoryHandleQuery = `*[_type == "product" && category->slug.current == $handle] | order(_updatedAt desc) {${productFields}}`;
+const productsByCategoryHandleQuery = `*[_type == "product" && $handle in category] | order(_updatedAt desc) {${productFields}}`;
 
 const homeConfigFields = `
   _id,
   "featuredProducts": featuredProducts[]->{${productFields}},
   "categorySections": categorySections[]{
-    "category": category->{${categoryPageFields}},
+    "category": category,
     enabled,
     sortOrder
   },
@@ -191,18 +191,37 @@ function sortProducts(
   return sorted;
 }
 
-function filterProducts(products: Product[], query?: string): Product[] {
-  if (!query) {
-    return products;
+function filterProducts(
+  products: Product[],
+  query?: string,
+  categoryHandle?: string,
+): Product[] {
+  let filtered = products;
+
+  // Filter by category
+  if (categoryHandle && categoryHandle !== "all") {
+    filtered = filtered.filter((product) => {
+      // Check if category is in the categories array
+      if (product.categories && Array.isArray(product.categories)) {
+        return product.categories.includes(categoryHandle);
+      }
+      // Fallback to categoryHandle for backward compatibility
+      return product.categoryHandle === categoryHandle;
+    });
   }
 
-  const q = query.toLowerCase();
-  return products.filter(
-    (product) =>
-      product.title.toLowerCase().includes(q) ||
-      product.description.toLowerCase().includes(q) ||
-      product.tags.some((tag) => tag.toLowerCase().includes(q)),
-  );
+  // Filter by query
+  if (query) {
+    const q = query.toLowerCase();
+    filtered = filtered.filter(
+      (product) =>
+        product.title.toLowerCase().includes(q) ||
+        product.description.toLowerCase().includes(q) ||
+        product.tags.some((tag) => tag.toLowerCase().includes(q)),
+    );
+  }
+
+  return filtered;
 }
 
 export async function createCart(): Promise<Cart> {
@@ -545,10 +564,12 @@ export async function getProducts({
   query,
   reverse,
   sortKey,
+  categoryHandle,
 }: {
   query?: string;
   reverse?: boolean;
   sortKey?: string;
+  categoryHandle?: string;
 }): Promise<Product[]> {
   "use cache";
   cacheTag(TAGS.products);
@@ -563,7 +584,11 @@ export async function getProducts({
     .map((doc) => mapSanityProduct(doc))
     .filter((product): product is Product => Boolean(product));
 
-  return sortProducts(filterProducts(products, query), sortKey, reverse);
+  return sortProducts(
+    filterProducts(products, query, categoryHandle),
+    sortKey,
+    reverse,
+  );
 }
 
 export async function getHomeConfig(): Promise<HomeConfig | undefined> {
@@ -588,9 +613,10 @@ export async function getHomeConfig(): Promise<HomeConfig | undefined> {
       .map(async (section: any) => {
         if (!section.category) return section;
 
+        const categoryHandle = section.category;
         const productDocs = await sanityClient.fetch<SanityProduct[]>(
           productsByCategoryHandleQuery,
-          { handle: section.category.slug.current },
+          { handle: categoryHandle },
         );
 
         const products = productDocs
@@ -598,9 +624,29 @@ export async function getHomeConfig(): Promise<HomeConfig | undefined> {
           .filter((product): product is Product => Boolean(product))
           .slice(0, 5);
 
+        // Create a simple category object from the string
+        const categoryObj = {
+          id: `category-${categoryHandle}`,
+          handle: categoryHandle,
+          title:
+            categoryHandle.charAt(0).toUpperCase() + categoryHandle.slice(1),
+          description: `${categoryHandle} products`,
+          products,
+          showOnHome: true,
+          homeSortOrder: section.sortOrder || 0,
+          updatedAt: new Date().toISOString(),
+          path: `/category/${categoryHandle}`,
+          logo: undefined,
+          featuredProduct: products[0],
+          seo: {
+            title: categoryHandle,
+            description: `${categoryHandle} products`,
+          },
+        };
+
         return {
           ...section,
-          category: mapSanityCategoryPage(section.category, products),
+          category: categoryObj,
         };
       }),
   );
