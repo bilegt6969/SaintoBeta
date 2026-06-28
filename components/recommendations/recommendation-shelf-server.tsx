@@ -25,8 +25,12 @@ export async function RecommendationShelf({
     params.append("cartProductIds", cartProductIds.join(","));
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    : "http://localhost:3000";
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"}/api/recommendations?${params.toString()}`,
+    `${baseUrl}/api/recommendations?${params.toString()}`,
     { cache: "no-store" },
   );
 
@@ -76,8 +80,12 @@ export async function RecommendationShelfData({
     params.append("cartProductIds", cartProductIds.join(","));
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+    : "http://localhost:3000";
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000"}/api/recommendations?${params.toString()}`,
+    `${baseUrl}/api/recommendations?${params.toString()}`,
     { cache: "no-store" },
   );
 
