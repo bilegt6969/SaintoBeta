@@ -26,6 +26,31 @@ export const categoryPage = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "category",
+      title: "Product Category",
+      type: "string",
+      group: "content",
+      options: {
+        list: [
+          { title: "Sneakers", value: "sneakers" },
+          { title: "Clothes", value: "clothes" },
+          { title: "Accessories", value: "accessories" },
+          { title: "Carry", value: "carry" },
+          { title: "Watches", value: "watches" },
+          { title: "Lifestyle", value: "lifestyle" },
+          { title: "Fragrance", value: "fragrance" },
+          { title: "Home", value: "home" },
+          { title: "Tech", value: "tech" },
+          { title: "Heritage", value: "heritage" },
+          { title: "Art", value: "art" },
+          { title: "Beauty", value: "beauty" },
+        ],
+      },
+      description:
+        "Select the product category this page represents. Products with this category selected will appear here automatically.",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: "categoryLogo",
       title: "Category logo (SVG from Figma)",
       type: "image",

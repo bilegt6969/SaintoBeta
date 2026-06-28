@@ -1,4 +1,5 @@
 import { AuthSessionSync } from "components/auth/auth-session-sync";
+import BottomCartBar from "components/cart/bottom-cart-bar";
 import { CartProvider } from "components/cart/cart-context";
 import { CookieConsentProvider } from "components/cookie-consent";
 import InvestButton from "components/InvestButton";
@@ -9,7 +10,7 @@ import { Geist } from "next/font/google";
 // @ts-ignore - nextjs-toploader types may not resolve correctly
 import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import "./globals.css";
 
 const { SITE_NAME } = process.env;
@@ -26,6 +27,8 @@ export const metadata = {
     default: SITE_NAME!,
     template: `%s | ${SITE_NAME}`,
   },
+  description:
+    "Discover beautifully designed physical products. Updated weekly.",
   robots: {
     follow: true,
     index: true,
@@ -39,6 +42,12 @@ export const metadata = {
     apple: "/favicon/apple-touch-icon.png",
   },
   manifest: "/favicon/site.webmanifest",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: baseUrl,
+    siteName: SITE_NAME,
+  },
 };
 
 export default async function RootLayout({
@@ -71,6 +80,9 @@ export default async function RootLayout({
               {children}
               <WelcomeCommerce />
             </main>
+            <Suspense fallback={null}>
+              <BottomCartBar />
+            </Suspense>
           </CartProvider>
         </CookieConsentProvider>
         <InvestButton />

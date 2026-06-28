@@ -22,21 +22,26 @@ function NavColumn({
   items,
   activeHref,
   compact = false,
+  seeMoreHref,
 }: {
   title: string;
   items: NavLink[];
   activeHref?: string;
   compact?: boolean;
+  seeMoreHref?: string;
 }) {
+  const displayItems = items.slice(0, 5);
+  const hasMore = items.length > 5;
+
   return (
     <div className="min-w-0">
       <p
-        className={`mb-1 text-neutral-500 ${compact ? "text-[10px]" : "mb-2 text-xs"}`}
+        className={`mb-1 text-neutral-200 ${compact ? "text-[10px]" : "mb-2 text-xs"}`}
       >
         {title}
       </p>
       <ul className={compact ? "space-y-1" : "space-y-1.5"}>
-        {items.map((item) => {
+        {displayItems.map((item) => {
           const isActive = activeHref === item.href;
           return (
             <li key={item.href}>
@@ -47,7 +52,7 @@ function NavColumn({
                 } ${
                   isActive
                     ? "font-medium text-white"
-                    : "text-neutral-200 hover:text-white"
+                    : "text-neutral-500 hover:text-white"
                 }`}
               >
                 {item.label}
@@ -55,6 +60,18 @@ function NavColumn({
             </li>
           );
         })}
+        {hasMore && seeMoreHref && (
+          <li>
+            <Link
+              href={seeMoreHref}
+              className={`block truncate leading-snug transition-colors ${
+                compact ? "text-[11px]" : "text-[13px]"
+              } text-neutral-200 hover:text-neutral-300`}
+            >
+              ... see more
+            </Link>
+          </li>
+        )}
       </ul>
     </div>
   );
@@ -90,10 +107,10 @@ function CardLogo({
       "lg:h-[3.375rem] lg:w-auto lg:max-w-[19.5rem] lg:object-left",
     !mobileLogoOnly &&
       compact &&
-      "mb-2 h-16 w-auto max-w-[18rem] object-left sm:mb-3 sm:h-9",
+      "mb-2 h-24 w-auto max-w-[22rem] object-left sm:mb-3 sm:h-16",
     !mobileLogoOnly &&
       !compact &&
-      "mb-4 h-12 w-auto max-w-[16.5rem] object-left sm:h-[3.375rem] sm:max-w-[19.5rem]",
+      "mb-4 h-20 w-auto max-w-[24rem] object-left sm:h-[5.5rem] sm:max-w-[26rem]",
   );
 
   if (logo?.url) {
@@ -138,6 +155,8 @@ export function BlackCard({
   showNav = true,
   showFooter = true,
   description,
+  categoriesSeeMoreHref = "/category",
+  brandsSeeMoreHref = "/search",
 }: {
   siteName?: string;
   logoHref?: string;
@@ -151,6 +170,10 @@ export function BlackCard({
   /** Whether to show the footer text */
   showFooter?: boolean;
   description?: string;
+  /** Link for categories 'see more' */
+  categoriesSeeMoreHref?: string;
+  /** Link for brands 'see more' */
+  brandsSeeMoreHref?: string;
 }) {
   const isBento = variant === "bento";
   const [hovered, setHovered] = useState(false);
@@ -183,8 +206,14 @@ export function BlackCard({
               items={categories}
               activeHref={activeCategoryHref}
               compact={isBento}
+              seeMoreHref={categoriesSeeMoreHref}
             />
-            <NavColumn title="Top brands" items={BRANDS} compact={isBento} />
+            <NavColumn
+              title="Top brands"
+              items={BRANDS}
+              compact={isBento}
+              seeMoreHref={brandsSeeMoreHref}
+            />
           </div>
         )}
         {!showNav && (

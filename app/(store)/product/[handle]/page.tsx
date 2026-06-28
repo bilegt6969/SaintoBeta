@@ -2,6 +2,8 @@ import { Gallery } from "components/product/gallery";
 import { KeyIngredientsSection } from "components/product/key-ingredients-section";
 import { ProductDescription } from "components/product/product-description";
 import { ProductPageWrapper } from "components/product/product-page-wrapper";
+import RecommendationShelfClient from "components/recommendations/recommendation-shelf-client";
+import { RecommendationShelfData } from "components/recommendations/recommendation-shelf-server";
 import type { Image } from "lib/commerce";
 import { getProduct } from "lib/commerce";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
@@ -91,12 +93,37 @@ async function ProductContent({
     },
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.sainto.app",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.title,
+        item: `https://www.sainto.app/product/${product.handle}`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(productJsonLd),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd),
         }}
       />
 
@@ -129,6 +156,53 @@ async function ProductContent({
           <KeyIngredientsSection section={product.keyIngredients} />
         </div>
       ) : null}
+
+      <div className="mt-16 lg:mt-24">
+        <Suspense
+          fallback={
+            <div className="py-8">
+              <h2 className="text-xl font-semibold mb-6">
+                You might also like
+              </h2>
+              <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex-shrink-0 w-64 md:w-72 lg:w-80 aspect-square bg-neutral-100 rounded-2xl animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          }
+        >
+          <RecommendationShelfWrapper
+            strategy="similar"
+            productId={product.id}
+            title="You might also like"
+            limit={6}
+          />
+        </Suspense>
+      </div>
     </>
   );
+}
+
+async function RecommendationShelfWrapper({
+  strategy,
+  productId,
+  title,
+  limit,
+}: {
+  strategy: "similar" | "trending" | "cart" | "new-arrivals";
+  productId: string;
+  title?: string;
+  limit?: number;
+}) {
+  const { products } = await RecommendationShelfData({
+    strategy,
+    productId,
+    limit,
+  });
+
+  return <RecommendationShelfClient products={products} title={title} />;
 }

@@ -15,7 +15,10 @@ export function CategoryMobileBento({
   ) as ReactElement[];
 
   const bentoSidebar = isValidElement(sidebar)
-    ? cloneElement(sidebar as ReactElement, { variant: "bento" } as any)
+    ? cloneElement(
+        sidebar as ReactElement,
+        { variant: "bento", showFooter: false } as any,
+      )
     : sidebar;
 
   if (items.length === 0) {

@@ -1,15 +1,21 @@
+import imageUrlBuilder from "@sanity/image-url";
 import { buildBundleAffinityMap } from "lib/recommendations/bundles";
 import { injectDiversity } from "lib/recommendations/diversity";
 import { filterByVariantAvailability } from "lib/recommendations/filters";
+import {
+    CART_QUERY,
+    TIER_1_QUERY,
+    TIER_2_QUERY,
+    TRENDING_QUERY,
+} from "lib/recommendations/queries";
 import { scoreProductPair, scoreTrending } from "lib/recommendations/scorer";
 import type {
-  RecommendationProduct,
-  RecommendationStrategy,
-  ScoredProduct,
-  ScoringContext,
+    RecommendationProduct,
+    RecommendationStrategy,
+    ScoredProduct,
+    ScoringContext,
 } from "lib/recommendations/types";
 import { sanityClient } from "lib/sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
 import { NextRequest, NextResponse } from "next/server";
 import { isSanityConfigured } from "sanity/env";
 
@@ -153,15 +159,58 @@ export async function GET(request: NextRequest) {
       bundleAffinityMap,
     };
 
-    // Fetch candidates based on strategy
-    const baseQuery = `*[_type == "product"] | order(_updatedAt desc) [0...50] {
-      _id, "slug": slug, title, brand, category, price, compareAtPrice, condition, tags, "updatedAt": _updatedAt, availableForSale, outOfStock, images, variants, purchaseBundles, bestFor
-    }`;
-    const allCandidates = await sanityClient.fetch(baseQuery);
-    console.log("All candidates from Sanity:", allCandidates.length);
-    console.log("First candidate:", allCandidates[0]);
+    // Fetch candidates based on strategy using tiered queries
+    if (strategy === "similar" && sourceProduct) {
+      // Tier 1: Primary pool (same brand or overlapping categories)
+      const tier1Params = {
+        targetId: productId,
+        targetBrand: sourceProduct.brand,
+        targetCategories: sourceProduct.category,
+      };
+      candidates = await sanityClient.fetch(TIER_1_QUERY, tier1Params);
 
-    candidates = allCandidates.slice(0, limit);
+      // Tier 2: Cross-category pool if we need more candidates
+      if (candidates.length < 12) {
+        const affinityCategories = getAffinityCategories(
+          sourceProduct.category,
+        );
+        const alreadyFetchedIds = candidates.map((c: any) => c._id);
+        const tier2Params = {
+          targetId: productId,
+          alreadyFetchedIds,
+          affinityCategories,
+        };
+        const tier2Candidates = await sanityClient.fetch(
+          TIER_2_QUERY,
+          tier2Params,
+        );
+        candidates = [...candidates, ...tier2Candidates];
+      }
+    } else if (strategy === "trending" || strategy === "new-arrivals") {
+      candidates = await sanityClient.fetch(TRENDING_QUERY);
+    } else if (strategy === "cart" && cartProductIds.length > 0) {
+      // Get categories from cart products
+      const cartProductsQuery = `*[_type == "product" && _id in $cartIds] {
+        _id, category
+      }`;
+      const cartProducts = await sanityClient.fetch(cartProductsQuery, {
+        cartIds: cartProductIds,
+      });
+      const cartCategories = cartProducts.flatMap((p: any) => p.category || []);
+      const uniqueCartCategories = [...new Set(cartCategories)];
+
+      const cartParams = {
+        excludeIds: cartProductIds,
+        cartCategories: uniqueCartCategories,
+      };
+      candidates = await sanityClient.fetch(CART_QUERY, cartParams);
+    } else {
+      // Fallback: simple query for other strategies
+      const baseQuery = `*[_type == "product"] | order(_updatedAt desc) [0...50] {
+        _id, "slug": slug, title, brand, category, price, compareAtPrice, condition, tags, "updatedAt": _updatedAt, availableForSale, outOfStock, images, variants, purchaseBundles, bestFor
+      }`;
+      candidates = await sanityClient.fetch(baseQuery);
+    }
 
     // Map candidates to our Product type (featuredImage URL is resolved here)
     const mappedCandidates = candidates.map(mapSanityProduct);

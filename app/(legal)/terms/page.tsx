@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-export default function PrivacyPolicy() {
+export default function TermsOfService() {
   // Apple-style easing curve (Ease Out Expo)
   const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -31,14 +32,14 @@ export default function PrivacyPolicy() {
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: "#ffffff", // Pure white for the main page
+        background: "#ffffff",
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
         color: "#222",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Glassmorphic Top Navigation - Retaining original color */}
+      {/* Glassmorphic Top Navigation */}
       <div className="w-full bg-[#f4f4f6]/70 backdrop-blur-xl border-b border-gray-200/50 flex justify-center sticky top-0 z-50">
         <div className="w-full max-w-[800px] px-10 py-4 flex justify-between items-center">
           <button
@@ -60,14 +61,15 @@ export default function PrivacyPolicy() {
             Back
           </button>
 
-          {/* Pushed to the right by justify-between */}
-          <div className="flex items-center h-5">
-            <img
-              src="/Lelogo.svg"
-              alt="Brand Logo"
-              className="h-full w-auto object-contain invert"
-            />
-          </div>
+          <Link href="/">
+            <div className="flex items-center h-5 cursor-pointer">
+              <img
+                src="/Lelogo.svg"
+                alt="Brand Logo"
+                className="h-full w-auto object-contain invert"
+              />
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -100,59 +102,93 @@ export default function PrivacyPolicy() {
                 color: "#111",
               }}
             >
-              Privacy & Policy
+              Terms of Service
             </h1>
             <p style={{ fontSize: 16, color: "#666", margin: 0 }}>
-              How we handle your data to keep Sainto secure and reliable.
+              The rules and guidelines that govern your use of Sainto.
             </p>
           </motion.div>
 
           <div style={contentStyle}>
-            <Section variants={itemVariants} title="1. Information We Collect">
+            <Section variants={itemVariants} title="1. Acceptance of Terms">
               <p>
-                When you interact with our platform, we collect information that
-                helps us facilitate secure C2C transactions. This includes your
-                contact details (name, email, phone number), delivery
-                coordinates across Ulaanbaatar, and transaction history.
-              </p>
-              <p>
-                We do not store sensitive bank login details on our servers;
-                bank transfers are authenticated using secure, unique
-                transaction codes generated per order.
+                By accessing and using Sainto, you agree to be bound by these
+                Terms of Service. If you do not agree to these terms, please do
+                not use our platform. These terms may be updated periodically,
+                and your continued use constitutes acceptance of any changes.
               </p>
             </Section>
 
-            <Section variants={itemVariants} title="2. How We Use Your Data">
-              <p>Your data is utilized strictly to:</p>
+            <Section variants={itemVariants} title="2. User Responsibilities">
+              <p>As a user of Sainto, you agree to:</p>
               <ul style={listStyle}>
-                <li>Process and verify your marketplace transactions.</li>
-                <li>Coordinate seamless logistics and dispatch updates.</li>
                 <li>
-                  Prevent fraud and ensure the authenticity of listed apparel
-                  and goods.
+                  Provide accurate and truthful information when creating your
+                  account and listing items.
                 </li>
-                <li>Improve our UI/UX and overall platform stability.</li>
+                <li>
+                  Only list items that you legally own and have the right to
+                  sell.
+                </li>
+                <li>
+                  Conduct all transactions in good faith and honor your
+                  commitments to buyers and sellers.
+                </li>
+                <li>
+                  Maintain the security of your account and notify us
+                  immediately of any unauthorized access.
+                </li>
               </ul>
             </Section>
 
-            <Section
-              variants={itemVariants}
-              title="3. Data Sharing & Disclosure"
-            >
+            <Section variants={itemVariants} title="3. Transaction Guidelines">
               <p>
-                We value your privacy. We do not sell your personal data to
-                third parties. Information is only shared with trusted
-                logistical partners necessary to deliver your orders or when
-                legally required to protect our community.
+                Sainto facilitates C2C transactions between users. All payments
+                are processed through secure bank transfers using unique
+                transaction codes. By using our platform, you acknowledge that:
+              </p>
+              <ul style={listStyle}>
+                <li>
+                  Sainto acts as an intermediary and is not responsible for the
+                  quality or condition of items sold.
+                </li>
+                <li>
+                  Delivery logistics are coordinated through trusted partners,
+                  and delivery times may vary.
+                </li>
+                <li>
+                  Disputes between buyers and sellers should be resolved through
+                  our support channel following our dispute resolution process.
+                </li>
+              </ul>
+            </Section>
+
+            <Section variants={itemVariants} title="4. Prohibited Activities">
+              <p>You may not use Sainto to:</p>
+              <ul style={listStyle}>
+                <li>List counterfeit, stolen, or illegal items.</li>
+                <li>Engage in fraudulent transactions or scams.</li>
+                <li>Harass, abuse, or harm other users.</li>
+                <li>Use the platform for any illegal purpose.</li>
+              </ul>
+            </Section>
+
+            <Section variants={itemVariants} title="5. Limitation of Liability">
+              <p>
+                Sainto is provided "as is" without warranties of any kind. We
+                are not liable for any indirect, incidental, or consequential
+                damages arising from your use of the platform. Our total
+                liability is limited to the amount you paid for the service, if
+                any.
               </p>
             </Section>
 
-            <Section variants={itemVariants} title="4. Your Rights">
+            <Section variants={itemVariants} title="6. Account Termination">
               <p>
-                You have the right to access, modify, or delete your personal
-                information at any time. If you wish to wipe your account
-                history or manage your active data footprint, please contact our
-                support team.
+                We reserve the right to suspend or terminate your account if you
+                violate these terms or engage in prohibited activities. Upon
+                termination, your right to use the platform will immediately
+                cease.
               </p>
             </Section>
           </div>
@@ -178,22 +214,22 @@ export default function PrivacyPolicy() {
                 version="v1.2.0"
                 date="May 30, 2026"
                 changes={[
-                  "Updated data handling protocols for direct banking channels.",
-                  "Clarified language regarding unique transaction code generation.",
+                  "Updated transaction guidelines to reflect direct banking integration.",
+                  "Added clarity on dispute resolution process.",
                 ]}
               />
               <ChangelogItem
                 version="v1.1.0"
                 date="February 15, 2025"
                 changes={[
-                  "Revised terms to reflect the transition to a full C2C fashion marketplace structure.",
-                  "Added clauses for peer-to-peer authenticated retail disputes.",
+                  "Revised terms for C2C marketplace model.",
+                  "Added user responsibilities section.",
                 ]}
               />
               <ChangelogItem
                 version="v1.0.0"
                 date="July 10, 2024"
-                changes={["Initial publication of the Privacy Policy."]}
+                changes={["Initial publication of Terms of Service."]}
               />
             </div>
           </motion.div>
@@ -285,8 +321,6 @@ function ChangelogItem({
 // Styles
 
 const cardStyle: React.CSSProperties = {
-  // Removed the background and heavy shadow since the page is already white.
-  // We keep a clean layout to fit the Apple aesthetic.
   padding: "24px 0",
   boxSizing: "border-box",
 };

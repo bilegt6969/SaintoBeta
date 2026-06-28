@@ -12,15 +12,30 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   validateEnvironmentVariables();
 
-  const routesMap = [""].map((route) => ({
+  const staticRoutes = [
+    "",
+    "/about",
+    "/contact",
+    "/blog",
+    "/categories",
+    "/search",
+    "/terms",
+    "/privacy",
+    "/support",
+    "/cookie-settings",
+  ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
+    changeFrequency: "weekly" as const,
+    priority: route === "" ? 1 : 0.8,
   }));
 
   const collectionsPromise = getCollections().then((collections) =>
     collections.map((collection) => ({
       url: `${baseUrl}${collection.path}`,
       lastModified: collection.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
     })),
   );
 
@@ -28,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     products.map((product) => ({
       url: `${baseUrl}/product/${product.handle}`,
       lastModified: product.updatedAt,
+      changeFrequency: "daily" as const,
+      priority: 0.6,
     })),
   );
 
@@ -35,6 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     pages.map((page) => ({
       url: `${baseUrl}/${page.handle}`,
       lastModified: page.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
     })),
   );
 
@@ -48,5 +67,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     throw JSON.stringify(error, null, 2);
   }
 
-  return [...routesMap, ...fetchedRoutes];
+  return [...staticRoutes, ...fetchedRoutes];
 }

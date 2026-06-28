@@ -13,7 +13,7 @@ export const TIER_1_QUERY = `
   )
 ] | order(_updatedAt desc) [0...60] {
   _id,
-  "handle": slug.current,
+  "slug": slug,
   title,
   brand,
   category,
@@ -24,7 +24,7 @@ export const TIER_1_QUERY = `
   "updatedAt": _updatedAt,
   availableForSale,
   outOfStock,
-  featuredImage,
+  images,
   variants,
   purchaseBundles,
   bestFor
@@ -44,7 +44,7 @@ export const TIER_2_QUERY = `
   "staff-pick" in tags
 ] | order(_updatedAt desc) [0...20] {
   _id,
-  "handle": slug.current,
+  "slug": slug,
   title,
   brand,
   category,
@@ -55,7 +55,7 @@ export const TIER_2_QUERY = `
   "updatedAt": _updatedAt,
   availableForSale,
   outOfStock,
-  featuredImage,
+  images,
   variants,
   purchaseBundles,
   bestFor
@@ -94,7 +94,7 @@ export const CART_QUERY = `
   count(category[@ in $cartCategories]) > 0
 ] | order(_updatedAt desc) [0...40] {
   _id,
-  "handle": slug.current,
+  "slug": slug,
   title,
   brand,
   category,
@@ -105,7 +105,7 @@ export const CART_QUERY = `
   "updatedAt": _updatedAt,
   availableForSale,
   outOfStock,
-  featuredImage,
+  images,
   variants,
   purchaseBundles,
   bestFor

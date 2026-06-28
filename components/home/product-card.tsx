@@ -137,7 +137,7 @@ export function HomeProductCard({
             amount={amount}
             currencyCode={currencyCode}
             className={cn(
-              "text-sm text-neutral-600 whitespace-nowrap font-mono",
+              "text-sm text-neutral-500 whitespace-nowrap font-mono tracking-tighter",
               isCompact && "max-lg:text-[10px]",
             )}
             currencyCodeClassName="hidden"

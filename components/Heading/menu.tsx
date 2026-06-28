@@ -3,15 +3,41 @@
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { cn } from "lib/cn";
 import type { NavLink } from "lib/navigation";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 
-// 1. The Ultra-Smooth Curve (Expo Out)
-// Starts incredibly fast, then glides to a long, luxurious stop.
-const smoothCurve =
-  "transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]";
+// Match website's island-motion easing
+const islandTiming =
+  "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]";
 
-const linkClass = cn("text-sm font-medium hover:bg-black/5", smoothCurve);
+const linkClass = cn(
+  "text-[13px] font-medium tracking-wide text-neutral-800 hover:text-neutral-500",
+  islandTiming,
+);
+
+interface CompanyLink {
+  label: string;
+  href: string;
+  description: string;
+}
+
+const companyLinks: CompanyLink[] = [
+  {
+    label: "About Us",
+    href: "/about",
+    description: "Learn about our mission, values, and story.",
+  },
+  {
+    label: "Blog",
+    href: "/blog",
+    description: "The latest articles, insights, and company updates.",
+  },
+  {
+    label: "Contact",
+    href: "/contact",
+    description: "Get in touch with our team for support or inquiries.",
+  },
+];
 
 export default function Menu({
   categories,
@@ -23,19 +49,21 @@ export default function Menu({
   return (
     <NavigationMenu.Root
       onValueChange={(value) => onOpenChange?.(value !== "")}
-      className="relative z-10 hidden lg:block"
+      className="relative z-50 hidden lg:block"
     >
-      <NavigationMenu.List className="flex items-center gap-1">
+      <NavigationMenu.List className="flex items-center gap-8">
         <NavigationMenu.Item>
           <NavigationMenu.Link asChild>
-            <Link
-              href="/"
-              className={cn(
-                linkClass,
-                "rounded-full px-4 py-2 text-neutral-600 hover:text-neutral-900",
-              )}
-            >
+            <Link href="/" className={linkClass}>
               Home
+            </Link>
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item>
+          <NavigationMenu.Link asChild>
+            <Link href="/category" className={linkClass}>
+              Category
             </Link>
           </NavigationMenu.Link>
         </NavigationMenu.Item>
@@ -44,74 +72,14 @@ export default function Menu({
           <NavigationMenu.Trigger
             className={cn(
               linkClass,
-              "group inline-flex items-center gap-1.5 rounded-full bg-transparent px-4 py-2 outline-none text-neutral-600 data-[state=open]:bg-black/5 data-[state=open]:text-neutral-900 hover:text-neutral-900",
-            )}
-          >
-            Categories
-            <ChevronDown
-              className={cn(
-                "h-3.5 w-3.5 opacity-60",
-                smoothCurve,
-                "group-data-[state=open]:rotate-180 group-data-[state=open]:opacity-100",
-              )}
-              aria-hidden
-            />
-          </NavigationMenu.Trigger>
-
-          <NavigationMenu.Content
-            className={cn(
-              "absolute left-1/2 top-full mt-2.5 -translate-x-1/2",
-              "data-[state=open]:animate-in data-[state=closed]:animate-out",
-              "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-              "data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-100",
-              "data-[state=closed]:slide-out-to-top-1 data-[state=open]:slide-in-from-top-2",
-              "origin-top",
-              "duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            )}
-          >
-            <div className="w-[260px] overflow-hidden rounded-3xl bg-white/70 p-2.5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] ring-1 ring-black/[0.04] backdrop-blur-[48px] saturate-[1.8]">
-              <ul className="flex flex-col space-y-0.5">
-                {categories.map((category) => (
-                  <li key={category.href}>
-                    <NavigationMenu.Link asChild>
-                      <Link
-                        href={category.href}
-                        className={cn(
-                          "group flex items-center justify-between rounded-2xl px-3 py-2.5 text-[14px] font-medium text-neutral-600 hover:bg-white hover:text-neutral-950 hover:shadow-sm hover:ring-1 hover:ring-black/5",
-                          smoothCurve,
-                        )}
-                      >
-                        <span>{category.label}</span>
-                        <div
-                          className={cn(
-                            "flex h-6 w-6 -translate-x-3 items-center justify-center rounded-full bg-neutral-100 opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
-                            smoothCurve,
-                          )}
-                        >
-                          <ChevronRight className="h-3.5 w-3.5 text-neutral-900" />
-                        </div>
-                      </Link>
-                    </NavigationMenu.Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-
-        <NavigationMenu.Item>
-          <NavigationMenu.Trigger
-            className={cn(
-              linkClass,
-              "group inline-flex items-center gap-1.5 rounded-full bg-transparent px-4 py-2 outline-none text-neutral-600 data-[state=open]:bg-black/5 data-[state=open]:text-neutral-900 hover:text-neutral-900",
+              "group inline-flex items-center gap-1.5 bg-transparent outline-none data-[state=open]:text-neutral-500",
             )}
           >
             Company
             <ChevronDown
               className={cn(
-                "h-3.5 w-3.5 opacity-60",
-                smoothCurve,
-                "group-data-[state=open]:rotate-180 group-data-[state=open]:opacity-100",
+                "h-3 w-3 opacity-60 group-data-[state=open]:rotate-180",
+                islandTiming,
               )}
               aria-hidden
             />
@@ -119,45 +87,68 @@ export default function Menu({
 
           <NavigationMenu.Content
             className={cn(
-              "absolute left-1/2 top-full mt-2.5 -translate-x-1/2",
+              "absolute left-1/2 top-full mt-4 -translate-x-1/2",
               "data-[state=open]:animate-in data-[state=closed]:animate-out",
               "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
               "data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-100",
-              "data-[state=closed]:slide-out-to-top-1 data-[state=open]:slide-in-from-top-2",
+              "data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2",
               "origin-top",
-              "duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
+              islandTiming,
             )}
           >
-            <div className="w-[260px] overflow-hidden rounded-3xl bg-white/70 p-2.5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] ring-1 ring-black/[0.04] backdrop-blur-[48px] saturate-[1.8]">
-              <ul className="flex flex-col space-y-0.5">
-                {[
-                  { label: "About", href: "/about" },
-                  { label: "Blog", href: "/blog" },
-                  { label: "Contact", href: "/contact" },
-                ].map((item) => (
-                  <li key={item.href}>
-                    <NavigationMenu.Link asChild>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "group flex items-center justify-between rounded-2xl px-3 py-2.5 text-[14px] font-medium text-neutral-600 hover:bg-white hover:text-neutral-950 hover:shadow-sm hover:ring-1 hover:ring-black/5",
-                          smoothCurve,
-                        )}
-                      >
-                        <span>{item.label}</span>
-                        <div
-                          className={cn(
-                            "flex h-6 w-6 -translate-x-3 items-center justify-center rounded-full bg-neutral-100 opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
-                            smoothCurve,
-                          )}
-                        >
-                          <ChevronRight className="h-3.5 w-3.5 text-neutral-900" />
-                        </div>
-                      </Link>
-                    </NavigationMenu.Link>
-                  </li>
-                ))}
-              </ul>
+            {/* Main Panel Container - using island-surface design system */}
+            <div className="island-surface w-[540px] overflow-hidden rounded-2xl p-6">
+              <div className="flex gap-6">
+                {/* Left Side: Context / Overview */}
+                <div className="flex w-[36%] flex-col justify-between">
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
+                      Overview
+                    </p>
+                    <h3 className="mt-2.5 text-[13px] font-semibold leading-relaxed tracking-tight text-neutral-900">
+                      Discover our company story and what drives us forward.
+                    </h3>
+                  </div>
+                  <Link
+                    href="/about"
+                    className="mt-6 text-[12px] font-medium text-neutral-800 transition-colors hover:text-neutral-500"
+                  >
+                    Learn more &rarr;
+                  </Link>
+                </div>
+
+                {/* Symmetrical Divider */}
+                <div className="w-px bg-neutral-200/50" />
+
+                {/* Right Side: Clean Typographic Links */}
+                <div className="flex-1">
+                  <p className="mb-2 pl-3 text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
+                    Explore
+                  </p>
+                  <ul className="space-y-0.5">
+                    {companyLinks.map((item) => (
+                      <li key={item.href}>
+                        <NavigationMenu.Link asChild>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "group block rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-black/5",
+                              islandTiming,
+                            )}
+                          >
+                            <span className="block text-[13px] font-medium text-neutral-900 transition-colors group-hover:text-neutral-600">
+                              {item.label}
+                            </span>
+                            <span className="mt-0.5 block text-[12px] font-normal leading-snug text-neutral-500">
+                              {item.description}
+                            </span>
+                          </Link>
+                        </NavigationMenu.Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </NavigationMenu.Content>
         </NavigationMenu.Item>

@@ -1,5 +1,20 @@
 import type { CategoryPage } from "lib/commerce/types";
 
+export const PRODUCT_CATEGORIES = [
+  { label: "Sneakers", value: "sneakers" },
+  { label: "Clothes", value: "clothes" },
+  { label: "Accessories", value: "accessories" },
+  { label: "Carry", value: "carry" },
+  { label: "Watches", value: "watches" },
+  { label: "Lifestyle", value: "lifestyle" },
+  { label: "Fragrance", value: "fragrance" },
+  { label: "Home", value: "home" },
+  { label: "Tech", value: "tech" },
+  { label: "Heritage", value: "heritage" },
+  { label: "Art", value: "art" },
+  { label: "Beauty", value: "beauty" },
+] as const;
+
 export const NAV_CATEGORIES = [
   { label: "Tech", href: "/search/tech" },
   { label: "Lifestyle", href: "/search/lifestyle" },
@@ -23,7 +38,13 @@ export function categoryPagesToNavLinks(
 export function resolveCategoryNavLinks(
   categoryPages: CategoryPage[],
 ): NavLink[] {
-  // Use realtime data from Sanity, fallback to static if empty
-  const fromSanity = categoryPagesToNavLinks(categoryPages);
-  return fromSanity.length > 0 ? fromSanity : [...NAV_CATEGORIES];
+  // Use product categories directly, mapped to category pages if they exist
+  const categoryMap = new Map(
+    categoryPages.map((page) => [page.category, page.path]),
+  );
+
+  return PRODUCT_CATEGORIES.map((cat) => ({
+    label: cat.label,
+    href: categoryMap.get(cat.value) || `/category/${cat.value}`,
+  }));
 }

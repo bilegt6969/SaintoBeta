@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useCart } from "../cart/cart-context";
 
 interface FooterProps {
   siteName?: string;
@@ -13,10 +14,10 @@ interface FooterProps {
 const SITE_NAME_DEFAULT = "Sainto";
 
 const bottomLinks = [
-  { label: "Terms & Conditions", href: "#" },
-  { label: "Privacy policy", href: "#" },
-  { label: "Support", href: "#" },
-  { label: "Cookie Settings", href: "#" },
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Privacy & Policy", href: "/privacy" },
+  { label: "Support", href: "/support" },
+  { label: "Cookie Settings", href: "/cookie-settings" },
 ];
 
 const socialLinks = [
@@ -97,17 +98,19 @@ function HomeFooter({
 }: FooterProps & { useWhiteBg?: boolean }) {
   const SITE_NAME = siteName || SITE_NAME_DEFAULT;
   const [mounted, setMounted] = useState(false);
+  const { cart } = useCart();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const year = mounted ? new Date().getFullYear() : 2026;
+  const hasCartItems = cart && cart.totalQuantity > 0;
 
   return (
     <>
       <footer
-        className={`relative overflow-hidden selection:bg-neutral-200 border-t-1 border-gray-200 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"}`}
+        className={`relative overflow-hidden selection:bg-neutral-200 border-t-1 border-gray-200 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems ? "pb-24" : ""}`}
       >
         <div className="" />
         <motion.div
@@ -246,9 +249,12 @@ function HomeFooter({
 }
 
 function SimpleFooter({ useWhiteBg }: { useWhiteBg?: boolean }) {
+  const { cart } = useCart();
+  const hasCartItems = cart && cart.totalQuantity > 0;
+
   return (
     <footer
-      className={`relative w-full overflow-hidden pb-6 pt-8 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"}`}
+      className={`relative w-full overflow-hidden pt-8 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems ? "pb-24" : "pb-6"}`}
     >
       <motion.div
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-neutral-200/50 via-white/0 to-white/0"

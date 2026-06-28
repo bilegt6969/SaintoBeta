@@ -142,6 +142,7 @@ export type CategoryPage = {
   id: string;
   handle: string;
   title: string;
+  category?: string;
   description: string;
   seo: SEO;
   updatedAt: string;

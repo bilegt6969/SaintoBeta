@@ -22,6 +22,7 @@ export async function CategoryGrid({ category }: { category: CategoryPage }) {
             logo={category.logo}
             categories={navCategories}
             activeCategoryHref={category.path}
+            showFooter={false}
           />
         }
         emptyMessage={`No products in ${category.title} yet. Open a product in Sanity and choose this category under “Category”.`}

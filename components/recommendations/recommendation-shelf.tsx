@@ -65,11 +65,11 @@ export default function RecommendationShelf({
     return (
       <div className="py-8">
         <h2 className="text-xl font-semibold mb-6">{shelfTitle}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
           {Array.from({ length: limit }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square bg-neutral-100 rounded-2xl animate-pulse"
+              className="flex-shrink-0 w-64 md:w-72 lg:w-80 aspect-square bg-neutral-100 rounded-2xl animate-pulse"
             />
           ))}
         </div>
@@ -84,11 +84,11 @@ export default function RecommendationShelf({
   return (
     <div className="py-8">
       <h2 className="text-xl font-semibold mb-6">{shelfTitle}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
         {products.map((product) => (
           <div
             key={product.id}
-            className="border border-neutral-100 bg-[#f5f5f5] rounded-2xl p-4"
+            className="flex-shrink-0 w-64 md:w-72 lg:w-80 border border-neutral-100 bg-[#f5f5f5] rounded-2xl p-4"
           >
             <HomeProductCard product={product} />
           </div>

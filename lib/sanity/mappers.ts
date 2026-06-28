@@ -125,6 +125,7 @@ type SanityCategoryPage = {
   _updatedAt: string;
   title: string;
   slug: { current: string };
+  category?: string;
   description?: string;
   categoryLogo?: SanityImage;
   showOnHome?: boolean;
@@ -448,6 +449,7 @@ export function mapSanityCategoryPage(
     id: doc._id,
     handle: doc.slug.current,
     title: doc.title,
+    category: doc.category,
     description: doc.description || "",
     seo: {
       title: doc.seo?.title || doc.title,

@@ -131,6 +131,7 @@ const categoryPageFields = `
   _updatedAt,
   title,
   "slug": slug,
+  category,
   description,
   categoryLogo,
   showOnHome,
@@ -262,7 +263,24 @@ export async function getCategoryPages(): Promise<CategoryPage[]> {
 
   const docs =
     await sanityClient.fetch<SanityCategoryPage[]>(categoryPagesQuery);
-  return docs.map((doc) => mapSanityCategoryPage(doc, []));
+
+  // Fetch products for each category to get item counts
+  const categoryPagesWithProducts = await Promise.all(
+    docs.map(async (doc) => {
+      const productDocs = await sanityClient.fetch<SanityProduct[]>(
+        productsByCategoryHandleQuery,
+        { handle: doc.category || doc.slug.current },
+      );
+
+      const products = productDocs
+        .map((product) => mapSanityProduct(product))
+        .filter((product): product is Product => Boolean(product));
+
+      return mapSanityCategoryPage(doc, products);
+    }),
+  );
+
+  return categoryPagesWithProducts;
 }
 
 export async function getCategoryPage(
@@ -285,9 +303,10 @@ export async function getCategoryPage(
     return undefined;
   }
 
+  // Use the category field from the category page to fetch products
   const productDocs = await sanityClient.fetch<SanityProduct[]>(
     productsByCategoryHandleQuery,
-    { handle },
+    { handle: doc.category || handle },
   );
 
   const products = productDocs
