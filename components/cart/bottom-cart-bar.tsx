@@ -10,7 +10,7 @@ import { useCart } from "./cart-context";
 
 // 1. Upgrade to a premium spring transition
 const smoothSpring = {
-  type: "spring",
+  type: "spring" as const,
   damping: 25,
   stiffness: 200,
   mass: 0.8,

@@ -6,7 +6,7 @@ import InvestButton from "components/InvestButton";
 import { WelcomeCommerce } from "components/welcome-commerce";
 import { getCart } from "lib/commerce";
 import { baseUrl } from "lib/utils";
-import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 // @ts-ignore - nextjs-toploader types may not resolve correctly
 import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
@@ -15,9 +15,9 @@ import "./globals.css";
 
 const { SITE_NAME } = process.env;
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
+const inter = localFont({
+  src: "../fonts/Inter-Bold.ttf",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -58,7 +58,7 @@ export default async function RootLayout({
   const cart = getCart();
 
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="en" className={inter.variable}>
       <body className="bg-[#f5f5f5] text-neutral-900 antialiased selection:bg-neutral-200">
         <NextTopLoader
           color="#111"
