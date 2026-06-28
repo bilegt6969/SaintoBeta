@@ -25,9 +25,10 @@ export async function RecommendationShelf({
     params.append("cartProductIds", cartProductIds.join(","));
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000";
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://www.sainto.app"
+      : "http://localhost:3000";
 
   const response = await fetch(
     `${baseUrl}/api/recommendations?${params.toString()}`,
@@ -80,9 +81,10 @@ export async function RecommendationShelfData({
     params.append("cartProductIds", cartProductIds.join(","));
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000";
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://www.sainto.app"
+      : "http://localhost:3000";
 
   const response = await fetch(
     `${baseUrl}/api/recommendations?${params.toString()}`,
