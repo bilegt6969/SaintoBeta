@@ -10,7 +10,12 @@ type Route = {
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  validateEnvironmentVariables();
+  try {
+    validateEnvironmentVariables();
+  } catch (error) {
+    // Continue with static routes if env validation fails
+    console.warn("Environment validation failed, using static routes only");
+  }
 
   const staticRoutes = [
     "",
@@ -30,41 +35,50 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.8,
   }));
 
-  const collectionsPromise = getCollections().then((collections) =>
-    collections.map((collection) => ({
-      url: `${baseUrl}${collection.path}`,
-      lastModified: collection.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
-  );
-
-  const productsPromise = getProducts({}).then((products) =>
-    products.map((product) => ({
-      url: `${baseUrl}/product/${product.handle}`,
-      lastModified: product.updatedAt,
-      changeFrequency: "daily" as const,
-      priority: 0.6,
-    })),
-  );
-
-  const pagesPromise = getPages().then((pages) =>
-    pages.map((page) => ({
-      url: `${baseUrl}/${page.handle}`,
-      lastModified: page.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
-  );
-
   let fetchedRoutes: Route[] = [];
 
   try {
+    const collectionsPromise = getCollections()
+      .then((collections) =>
+        collections.map((collection) => ({
+          url: `${baseUrl}${collection.path}`,
+          lastModified: collection.updatedAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        })),
+      )
+      .catch(() => []);
+
+    const productsPromise = getProducts({})
+      .then((products) =>
+        products.map((product) => ({
+          url: `${baseUrl}/product/${product.handle}`,
+          lastModified: product.updatedAt,
+          changeFrequency: "daily" as const,
+          priority: 0.6,
+        })),
+      )
+      .catch(() => []);
+
+    const pagesPromise = getPages()
+      .then((pages) =>
+        pages.map((page) => ({
+          url: `${baseUrl}/${page.handle}`,
+          lastModified: page.updatedAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        })),
+      )
+      .catch(() => []);
+
     fetchedRoutes = (
       await Promise.all([collectionsPromise, productsPromise, pagesPromise])
     ).flat();
   } catch (error) {
-    throw JSON.stringify(error, null, 2);
+    console.warn(
+      "Failed to fetch dynamic routes, using static routes only:",
+      error,
+    );
   }
 
   return [...staticRoutes, ...fetchedRoutes];
