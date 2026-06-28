@@ -1,5 +1,5 @@
 import { getCollections, getPages, getProducts } from "lib/commerce";
-import { baseUrl, validateEnvironmentVariables } from "lib/utils";
+import { validateEnvironmentVariables } from "lib/utils";
 import { MetadataRoute } from "next";
 
 type Route = {
@@ -8,6 +8,8 @@ type Route = {
 };
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = "https://www.sainto.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
@@ -29,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/support",
     "/cookie-settings",
   ].map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: `${SITE_URL}${route}`,
     lastModified: new Date().toISOString(),
     changeFrequency: "weekly" as const,
     priority: route === "" ? 1 : 0.8,
@@ -41,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const collectionsPromise = getCollections()
       .then((collections) =>
         collections.map((collection) => ({
-          url: `${baseUrl}${collection.path}`,
+          url: `${SITE_URL}${collection.path}`,
           lastModified: collection.updatedAt,
           changeFrequency: "weekly" as const,
           priority: 0.8,
@@ -52,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productsPromise = getProducts({})
       .then((products) =>
         products.map((product) => ({
-          url: `${baseUrl}/product/${product.handle}`,
+          url: `${SITE_URL}/product/${product.handle}`,
           lastModified: product.updatedAt,
           changeFrequency: "daily" as const,
           priority: 0.6,
@@ -63,7 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const pagesPromise = getPages()
       .then((pages) =>
         pages.map((page) => ({
-          url: `${baseUrl}/${page.handle}`,
+          url: `${SITE_URL}/${page.handle}`,
           lastModified: page.updatedAt,
           changeFrequency: "weekly" as const,
           priority: 0.7,
