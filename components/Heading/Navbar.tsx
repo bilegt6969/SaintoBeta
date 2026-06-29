@@ -112,7 +112,7 @@ export default function Navbar({
       {/* Top scroll blur (mobile + desktop) */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: isScrolled ? 1 : 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: smoothEase }}
         className="pointer-events-none fixed inset-x-0 top-0 z-[90] h-32 bg-white/20 backdrop-blur-md"
         style={{
@@ -207,7 +207,7 @@ export default function Navbar({
                     setIsSearchOpen(false);
                     setIsOpen((prev) => !prev);
                   }}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-black/5 lg:hidden"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-600 transition-colors hover:bg-black/5 lg:hidden"
                   aria-label={isOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isOpen}
                 >

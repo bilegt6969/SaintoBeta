@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Support() {
   // Apple-style easing curve (Ease Out Expo)
@@ -61,13 +61,13 @@ export default function Support() {
             Back
           </button>
 
-          <div className="flex items-center h-5">
+          <Link href="/" className="flex items-center h-5 cursor-pointer">
             <img
               src="/Lelogo.svg"
               alt="Brand Logo"
               className="h-full w-auto object-contain invert"
             />
-          </div>
+          </Link>
         </div>
       </div>
 
@@ -110,15 +110,15 @@ export default function Support() {
           <div style={contentStyle}>
             <Section variants={itemVariants} title="1. Contact Us">
               <p>
-                Our support team is available to assist you with any questions or
-                concerns. Reach out to us through:
+                Our support team is available to assist you with any questions
+                or concerns. Reach out to us through:
               </p>
               <ul style={listStyle}>
                 <li>
-                  <strong>Email:</strong> support@sainto.mn
+                  <strong>Email:</strong> bilegt6969@gmail.cpm
                 </li>
                 <li>
-                  <strong>Phone:</strong> +976 9999-9999
+                  <strong>Phone:</strong> +976 9019-5589
                 </li>
                 <li>
                   <strong>Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM
@@ -131,14 +131,14 @@ export default function Support() {
               <p>Find quick solutions to frequently encountered problems:</p>
               <ul style={listStyle}>
                 <li>
-                  <strong>Order Not Received:</strong> Track your order using the
-                  unique transaction code provided. If delivery is delayed beyond
-                  the estimated time, contact our logistics partner.
+                  <strong>Order Not Received:</strong> Track your order using
+                  the unique transaction code provided. If delivery is delayed
+                  beyond the estimated time, contact our logistics partner.
                 </li>
                 <li>
                   <strong>Payment Issues:</strong> Ensure your bank transfer was
-                  successful. If you encounter errors, verify the transaction code
-                  and contact your bank.
+                  successful. If you encounter errors, verify the transaction
+                  code and contact your bank.
                 </li>
                 <li>
                   <strong>Account Access:</strong> If you cannot log in, use the
@@ -159,7 +159,8 @@ export default function Support() {
               </p>
               <ul style={listStyle}>
                 <li>
-                  Contact the other party directly to resolve the issue amicably.
+                  Contact the other party directly to resolve the issue
+                  amicably.
                 </li>
                 <li>
                   If unresolved, submit a dispute request through our support
@@ -197,8 +198,8 @@ export default function Support() {
               <p>
                 <strong>Q: How long does delivery take?</strong>
                 <br />
-                A: Delivery typically takes 2-5 business days within Ulaanbaatar,
-                depending on the item and location.
+                A: Delivery typically takes 2-5 business days within
+                Ulaanbaatar, depending on the item and location.
               </p>
               <p>
                 <strong>Q: Is my payment information secure?</strong>

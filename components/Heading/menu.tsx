@@ -11,7 +11,7 @@ const islandTiming =
   "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]";
 
 const linkClass = cn(
-  "text-[13px] font-medium tracking-wide text-neutral-800 hover:text-neutral-500",
+  "text-[13px] font-medium tracking-wide text-neutral-500 hover:text-neutral-500",
   islandTiming,
 );
 
@@ -72,7 +72,7 @@ export default function Menu({
           <NavigationMenu.Trigger
             className={cn(
               linkClass,
-              "group inline-flex items-center gap-1.5 bg-transparent outline-none data-[state=open]:text-neutral-500",
+              "group inline-flex items-center gap-1.5 bg-transparent outline-none data-[state=open]:text-neutral-400",
             )}
           >
             Company
@@ -136,7 +136,7 @@ export default function Menu({
                               islandTiming,
                             )}
                           >
-                            <span className="block text-[13px] font-medium text-neutral-900 transition-colors group-hover:text-neutral-600">
+                            <span className="block text-[13px] font-medium text-neutral-700 transition-colors group-hover:text-neutral-500">
                               {item.label}
                             </span>
                             <span className="mt-0.5 block text-[12px] font-normal leading-snug text-neutral-500">

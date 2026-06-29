@@ -84,11 +84,11 @@ export default function RecommendationShelf({
   return (
     <div className="py-8">
       <h2 className="text-xl font-semibold mb-6">{shelfTitle}</h2>
-      <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
+      <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 sm:gap-4 scrollbar-hide">
         {products.map((product) => (
           <div
             key={product.id}
-            className="flex-shrink-0 w-64 md:w-72 lg:w-80 border border-neutral-100 bg-[#f5f5f5] rounded-2xl p-4"
+            className="flex-shrink-0 w-72 md:w-80 lg:w-80 border border-neutral-100 bg-[#f5f5f5] rounded-2xl p-4"
           >
             <HomeProductCard product={product} />
           </div>

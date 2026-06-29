@@ -68,15 +68,15 @@ export default function RecommendationShelfClient({
       </h2>
 
       {/* Left Edge Blur */}
-      <div className="pointer-events-none absolute bottom-0 left-0 top-16 z-10 w-16 bg-gradient-to-r from-white via-white/80 to-transparent sm:w-28" />
+      <div className="pointer-events-none absolute bottom-0 left-0 top-16 z-10 hidden sm:block w-24 bg-gradient-to-r from-white via-white/80 to-transparent md:w-28" />
 
       {/* Right Edge Blur */}
-      <div className="pointer-events-none absolute bottom-0 right-0 top-16 z-10 w-16 bg-gradient-to-l from-white via-white/80 to-transparent sm:w-28" />
+      <div className="pointer-events-none absolute bottom-0 right-0 top-16 z-10 hidden sm:block w-24 bg-gradient-to-l from-white via-white/80 to-transparent md:w-28" />
 
       {/* Left Chevron */}
       <button
         onClick={() => scroll("left")}
-        className="absolute left-2 sm:left-4 top-[55%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/90 shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-white active:scale-95"
+        className="absolute left-2 sm:left-4 top-[55%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/90 shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-white active:scale-95 max-sm:hidden"
       >
         <ChevronLeft className="h-5 w-5 text-neutral-800" />
       </button>
@@ -84,7 +84,7 @@ export default function RecommendationShelfClient({
       {/* Right Chevron */}
       <button
         onClick={() => scroll("right")}
-        className="absolute right-2 sm:right-4 top-[55%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/90 shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-white active:scale-95"
+        className="absolute right-2 sm:right-4 top-[55%] z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/90 shadow-lg backdrop-blur-md transition-all hover:scale-110 hover:bg-white active:scale-95 max-sm:hidden"
       >
         <ChevronRight className="h-5 w-5 text-neutral-800" />
       </button>
@@ -95,12 +95,12 @@ export default function RecommendationShelfClient({
         onScroll={handleScroll}
         // Removed `scroll-smooth` to fix the infinite jump jitter
         // Added raw CSS selectors to guarantee scrollbar removal across all browsers
-        className="flex gap-4 overflow-x-auto px-4 pb-4 sm:px-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex gap-3 overflow-x-auto px-4 pb-4 sm:gap-4 sm:px-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {infiniteProducts.map((product, index) => (
           <div
             key={`${product.id}-${index}`}
-            className="w-64 flex-shrink-0 rounded-2xl border border-neutral-100 bg-[#f5f5f5] p-4 md:w-72 lg:w-80"
+            className="w-56 flex-shrink-0 rounded-2xl border border-neutral-100 bg-[#f5f5f5] p-2 sm:w-72 md:w-80 lg:w-80 sm:p-4"
           >
             <HomeProductCard product={product} />
           </div>

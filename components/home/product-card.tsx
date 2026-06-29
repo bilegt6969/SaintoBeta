@@ -60,7 +60,7 @@ export function HomeProductCard({
   const imageBlock = (
     <div
       className={cn(
-        "category-bento-product-image mb-4 lg:mb-0 t-resize relative w-full overflow-hidden rounded-2xl bg-white",
+        "category-bento-product-image mb-4 lg:mb-0 t-resize relative w-full overflow-hidden rounded-2xl rounded-b-md bg-white",
         !isCompact && "aspect-square",
         isCompact && "aspect-square max-lg:rounded-xl",
         isBento && "aspect-square rounded-xl",
@@ -79,6 +79,7 @@ export function HomeProductCard({
             "object-contain p-3 pb-16",
             isCompact && "max-lg:object-cover max-lg:p-2 max-lg:pb-20",
             isBento && "object-cover p-4 pb-20",
+            !isCompact && "max-sm:object-cover max-sm:p-2 max-sm:pb-2",
             !isOutOfStock &&
               "transition duration-500 ease-out group-hover:scale-[1.03]",
           )}
@@ -99,15 +100,17 @@ export function HomeProductCard({
       {/* Product info overlay */}
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm p-4",
+          "absolute bottom-0 left-0 right-0 z-30 p-4",
           isCompact && "max-lg:p-2.5",
           isBento && "p-3",
+          !isCompact && !isBento && "max-sm:p-2",
         )}
       >
         <p
           className={cn(
             "text-sm text-neutral-400",
             isCompact && "max-lg:text-[10px]",
+            !isCompact && !isBento && "max-sm:text-[11px]",
           )}
         >
           {brand}
@@ -118,12 +121,16 @@ export function HomeProductCard({
           className={cn(
             "flex items-start justify-between gap-2 mt-1",
             isCompact && "max-lg:gap-1 max-lg:mt-0.5",
+            !isCompact && !isBento && "max-sm:gap-2 max-sm:mt-1",
           )}
         >
           <h2
             className={cn(
               "line-clamp-2 text-sm font-normal text-neutral-900",
               isCompact && "max-lg:text-[11px] max-lg:leading-snug",
+              !isCompact &&
+                !isBento &&
+                "max-sm:text-[12px] max-sm:leading-tight",
             )}
           >
             {product.title}
@@ -139,6 +146,7 @@ export function HomeProductCard({
             className={cn(
               "text-sm text-neutral-500 whitespace-nowrap font-mono tracking-tighter",
               isCompact && "max-lg:text-[10px]",
+              !isCompact && !isBento && "max-sm:text-[11px]",
             )}
             currencyCodeClassName="hidden"
           />

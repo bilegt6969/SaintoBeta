@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function PrivacyPolicy() {
   // Apple-style easing curve (Ease Out Expo)
@@ -62,13 +62,13 @@ export default function PrivacyPolicy() {
           </button>
 
           {/* Pushed to the right by justify-between */}
-          <div className="flex items-center h-5">
+          <Link href="/" className="flex items-center h-5 cursor-pointer">
             <img
               src="/Lelogo.svg"
               alt="Brand Logo"
               className="h-full w-auto object-contain invert"
             />
-          </div>
+          </Link>
         </div>
       </div>
 
