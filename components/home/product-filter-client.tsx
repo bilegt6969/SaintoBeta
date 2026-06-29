@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export function ProductFilterClient() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [activeSort, setActiveSort] = useState("Featured");
+  const [activeSort, setActiveSort] = useState("Trending");
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {

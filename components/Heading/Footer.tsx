@@ -99,6 +99,7 @@ function HomeFooter({
   const SITE_NAME = siteName || SITE_NAME_DEFAULT;
   const [mounted, setMounted] = useState(false);
   const { cart } = useCart();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -106,11 +107,12 @@ function HomeFooter({
 
   const year = mounted ? new Date().getFullYear() : 2026;
   const hasCartItems = cart && cart.totalQuantity > 0;
+  const isCheckoutPage = pathname?.startsWith("/checkout");
 
   return (
     <>
       <footer
-        className={`relative overflow-hidden selection:bg-neutral-200 border-t-1 border-gray-200 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems ? "pb-24" : ""}`}
+        className={`relative overflow-hidden selection:bg-neutral-200 border-t-1 border-gray-200 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems && !isCheckoutPage ? "pb-24" : ""}`}
       >
         <div className="" />
         <motion.div
@@ -250,11 +252,13 @@ function HomeFooter({
 
 function SimpleFooter({ useWhiteBg }: { useWhiteBg?: boolean }) {
   const { cart } = useCart();
+  const pathname = usePathname();
   const hasCartItems = cart && cart.totalQuantity > 0;
+  const isCheckoutPage = pathname?.startsWith("/checkout");
 
   return (
     <footer
-      className={`relative w-full overflow-hidden pt-8 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems ? "pb-24" : "pb-6"}`}
+      className={`relative w-full overflow-hidden pt-8 ${useWhiteBg ? "bg-white" : "bg-[#f5f5f5]"} ${hasCartItems && !isCheckoutPage ? "pb-24" : "pb-6"}`}
     >
       <motion.div
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-neutral-200/50 via-white/0 to-white/0"

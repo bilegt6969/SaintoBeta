@@ -26,7 +26,7 @@ export function HomeGrid({
         if (activeSort === "Trending") {
           const params = new URLSearchParams({
             strategy: "trending",
-            limit: "50",
+            limit: "200",
           });
 
           const response = await fetch(

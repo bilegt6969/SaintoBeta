@@ -2,6 +2,7 @@ import { Gallery } from "components/product/gallery";
 import { KeyIngredientsSection } from "components/product/key-ingredients-section";
 import { ProductDescription } from "components/product/product-description";
 import { ProductPageWrapper } from "components/product/product-page-wrapper";
+import { ClientViewTracker } from "components/product/view-tracker";
 import RecommendationShelfClient from "components/recommendations/recommendation-shelf-client";
 import { RecommendationShelfData } from "components/recommendations/recommendation-shelf-server";
 import type { Image } from "lib/commerce";
@@ -135,6 +136,10 @@ async function ProductContent({
 
   return (
     <>
+      <ClientViewTracker
+        productId={product.id}
+        productHandle={product.handle}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

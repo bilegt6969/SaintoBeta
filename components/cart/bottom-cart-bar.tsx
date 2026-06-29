@@ -151,7 +151,13 @@ export default function BottomCartBar() {
                   <p className="text-neutral-500 text-[8px]">Cart total</p>
                   <p className="text-neutral-900 text-sm font-semibold">
                     {cart.cost.totalAmount.currencyCode}{" "}
-                    {Number(cart.cost.totalAmount.amount).toFixed(1)}
+                    {Number(cart.cost.totalAmount.amount).toLocaleString(
+                      "en-US",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      },
+                    )}
                   </p>
                 </div>
                 <button

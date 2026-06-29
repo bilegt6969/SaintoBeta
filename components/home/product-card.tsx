@@ -10,6 +10,7 @@ import {
 } from "lib/product-meta";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function StaffPickBadge({ compact = false }: { compact?: boolean }) {
   return (
@@ -44,12 +45,16 @@ export function HomeProductCard({
 }) {
   const brand = getProductBrand(product);
   const category = getProductCategory(product);
+  const categoryHandle =
+    (product as any).categoryHandle ||
+    category?.toLowerCase().replace(/\s+/g, "-");
   const staffPick = isStaffPick(product);
   const { amount, currencyCode } = product.priceRange.maxVariantPrice;
   const isOutOfStock = product.outOfStock;
   const productHref = href ?? `/product/${product.handle}`;
   const isCompact = density === "compact";
   const isBento = density === "bento";
+  const router = useRouter();
 
   const imageSizes = isCompact
     ? "(max-width: 1023px) 45vw, (min-width: 1024px) 30vw"
@@ -81,18 +86,8 @@ export function HomeProductCard({
             isBento && "object-cover p-4 pb-20",
             !isCompact && "max-sm:object-cover max-sm:p-2 max-sm:pb-2",
             !isOutOfStock &&
-              "transition duration-500 ease-out group-hover:scale-[1.03]",
+              "transition duration-500 ease-out group-hover:-translate-y-2",
           )}
-        />
-      ) : null}
-      {!isOutOfStock && !isBento ? (
-        <div
-          className="pointer-events-none absolute inset-0 z-10 opacity-0 backdrop-blur-[20px] transition-opacity duration-500 ease-out group-hover:opacity-100 max-lg:hidden"
-          style={{
-            WebkitMaskImage:
-              "radial-gradient(circle, transparent 40%, black 90%)",
-            maskImage: "radial-gradient(circle, transparent 40%, black 90%)",
-          }}
         />
       ) : null}
       {staffPick ? <StaffPickBadge compact={isCompact || isBento} /> : null}
@@ -113,9 +108,25 @@ export function HomeProductCard({
             !isCompact && !isBento && "max-sm:text-[11px]",
           )}
         >
-          {brand}
+          <span
+            className="hover:text-neutral-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-neutral-600 underline-offset-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/category/${categoryHandle}`);
+            }}
+          >
+            {brand}
+          </span>
           <span className="mx-1 text-neutral-300 max-lg:mx-0.5">·</span>
-          {category}
+          <span
+            className="hover:text-neutral-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-neutral-600 underline-offset-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/category/${categoryHandle}`);
+            }}
+          >
+            {category}
+          </span>
         </p>
         <div
           className={cn(

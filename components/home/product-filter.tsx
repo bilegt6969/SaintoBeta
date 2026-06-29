@@ -2,19 +2,19 @@
 
 import { cn } from "lib/cn";
 import {
-  Amphora,
-  Balloon,
-  Briefcase,
-  Check,
-  ChevronDown,
-  Flower,
-  Footprints,
-  Glasses,
-  Grid,
-  MonitorSmartphoneIcon,
-  Paintbrush,
-  Shirt,
-  Watch,
+    Amphora,
+    Balloon,
+    Briefcase,
+    Check,
+    ChevronDown,
+    Flower,
+    Footprints,
+    Glasses,
+    Grid,
+    MonitorSmartphoneIcon,
+    Paintbrush,
+    Shirt,
+    Watch,
 } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -63,7 +63,7 @@ export default function FilterBar({
   products = [],
 }: FilterBarProps) {
   const [internalCategory, setInternalCategory] = useState("all");
-  const [internalSort, setInternalSort] = useState("Featured");
+  const [internalSort, setInternalSort] = useState("Trending");
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);

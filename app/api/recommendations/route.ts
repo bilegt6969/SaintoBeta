@@ -16,8 +16,28 @@ import type {
     ScoringContext,
 } from "lib/recommendations/types";
 import { sanityClient } from "lib/sanity/client";
+import { ProductView } from "models/ProductView";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import { isSanityConfigured } from "sanity/env";
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+// Cache the connection
+let cachedConnection: typeof mongoose | null = null;
+
+async function connectToDatabase() {
+  if (cachedConnection) {
+    return cachedConnection;
+  }
+
+  if (!MONGODB_URI) {
+    return null;
+  }
+
+  cachedConnection = await mongoose.connect(MONGODB_URI!);
+  return cachedConnection;
+}
 
 // Build the image URL builder once
 const builder = imageUrlBuilder(sanityClient);
@@ -227,9 +247,23 @@ export async function GET(request: NextRequest) {
     // Score candidates
     let scoredProducts: ScoredProduct[];
     if (strategy === "trending" || strategy === "new-arrivals") {
+      // Fetch view counts for all candidates
+      const db = await connectToDatabase();
+      const productIds = filteredCandidates.map((p) => p.id);
+      let viewCounts: Record<string, number> = {};
+
+      if (db) {
+        const viewDocs = await ProductView.find({
+          productId: { $in: productIds },
+        });
+        viewDocs.forEach((doc: any) => {
+          viewCounts[doc.productId] = doc.viewCount;
+        });
+      }
+
       scoredProducts = filteredCandidates.map((product) => ({
         product,
-        score: scoreTrending(product),
+        score: scoreTrending(product, viewCounts[product.id]),
       }));
     } else if (strategy === "similar" && sourceProduct) {
       const mappedSource = mapSanityProduct(sourceProduct);
@@ -250,8 +284,8 @@ export async function GET(request: NextRequest) {
 
     // Apply diversity injection
     const diverseProducts = injectDiversity(scoredProducts, {
-      maxPerBrand: 2,
-      maxPerCategory: 3,
+      maxPerBrand: 50,
+      maxPerCategory: 50,
     });
 
     // Slice to limit

@@ -148,7 +148,10 @@ export function scoreProductPair(
 }
 
 // Trending-specific scoring (for Phase 1 trending strategy)
-export function scoreTrending(candidate: RecommendationProduct): number {
+export function scoreTrending(
+  candidate: RecommendationProduct,
+  viewCount?: number,
+): number {
   const daysSince =
     (Date.now() - new Date(candidate.updatedAt).getTime()) / 86_400_000;
   // Half-life of 15 days: items 30 days old score ~0.25
@@ -168,5 +171,9 @@ export function scoreTrending(candidate: RecommendationProduct): number {
       ? 0.5
       : 1;
 
-  return recency * isOnSale * staffPick * available;
+  // View count scoring: normalize using log scale to prevent domination
+  // Views with log scaling: 10 views ≈ 1.0, 100 views ≈ 1.5, 1000 views ≈ 2.0
+  const viewScore = viewCount ? Math.log10(viewCount + 1) * 0.3 : 0;
+
+  return recency * isOnSale * staffPick * available + viewScore;
 }
