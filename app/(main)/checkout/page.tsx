@@ -28,8 +28,10 @@ async function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CheckoutContent />
-    </Suspense>
+    <div className="hide-footer-on-success">
+      <Suspense fallback={<div>Loading...</div>}>
+        <CheckoutContent />
+      </Suspense>
+    </div>
   );
 }

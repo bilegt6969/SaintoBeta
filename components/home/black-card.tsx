@@ -92,9 +92,9 @@ function CardLogo({
   mobileLogoOnly?: boolean;
 }) {
   const linkClass = cn(
-    "inline-block",
+    "inline-block w-full",
     compact && !mobileLogoOnly && "mb-2",
-    !compact && !mobileLogoOnly && "mb-4",
+    !compact && !mobileLogoOnly && "mb-4 max-sm:flex max-sm:justify-center",
     mobileLogoOnly &&
       "flex max-lg:mb-0 max-lg:h-full max-lg:w-full max-lg:items-start max-lg:justify-start lg:mb-4",
   );
@@ -102,29 +102,31 @@ function CardLogo({
   const logoClass = cn(
     "object-contain brightness-0 invert",
     mobileLogoOnly &&
-      "max-lg:h-auto max-lg:max-h-[72%] max-lg:w-auto max-lg:max-w-[88%] max-lg:object-left",
+      "max-lg:h-auto max-lg:max-h-[72%] max-lg:w-auto max-lg:max-w-[88%] max-lg:object-center",
     mobileLogoOnly &&
       "lg:h-[3.375rem] lg:w-auto lg:max-w-[19.5rem] lg:object-left",
     !mobileLogoOnly &&
       compact &&
-      "mb-2 h-24 w-auto max-w-[22rem] object-left sm:mb-3 sm:h-16",
+      "mb-2 h-24 w-auto max-w-[22rem] object-center sm:object-left sm:mb-3 sm:h-16",
     !mobileLogoOnly &&
       !compact &&
-      "mb-4 h-20 w-auto max-w-[24rem] object-left sm:h-[5.5rem] sm:max-w-[26rem]",
+      "mb-4 h-[2.5rem] w-auto max-w-[24rem] object-center sm:object-left sm:h-[4.5rem] sm:max-w-[26rem] lg:h-[4rem] lg:max-w-[18.2rem] xl:h-[5.5rem] xl:max-w-[26rem] 2xl:h-[5.5rem] 2xl:max-w-[26rem]",
   );
 
   if (logo?.url) {
     return (
       <Link href={logoHref} className={linkClass} aria-label={siteName}>
-        <Image
-          src={logo.url}
-          alt={logo.altText || siteName}
-          width={logo.width || 800}
-          height={logo.height || 200}
-          className={logoClass}
-          priority
-          unoptimized={logo.url.endsWith(".svg")}
-        />
+        <div className="w-full max-sm:flex max-sm:justify-center">
+          <Image
+            src={logo.url}
+            alt={logo.altText || siteName}
+            width={logo.width || 800}
+            height={logo.height || 200}
+            className={logoClass}
+            priority
+            unoptimized={logo.url.endsWith(".svg")}
+          />
+        </div>
       </Link>
     );
   }

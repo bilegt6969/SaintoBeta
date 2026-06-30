@@ -65,7 +65,7 @@ export function HomeProductCard({
   const imageBlock = (
     <div
       className={cn(
-        "category-bento-product-image mb-4 lg:mb-0 t-resize relative w-full overflow-hidden rounded-2xl rounded-b-md bg-white",
+        "category-bento-product-image mb-4 sm:mb-0 lg:mb-0 t-resize relative w-full overflow-hidden rounded-2xl rounded-b-md bg-white",
         !isCompact && "aspect-square",
         isCompact && "aspect-square max-lg:rounded-xl",
         isBento && "aspect-square rounded-xl",
@@ -84,7 +84,8 @@ export function HomeProductCard({
             "object-contain p-3 pb-16",
             isCompact && "max-lg:object-cover max-lg:p-2 max-lg:pb-20",
             isBento && "object-cover p-4 pb-20",
-            !isCompact && "max-sm:object-cover max-sm:p-2 max-sm:pb-2",
+            !isCompact &&
+              "max-sm:object-cover max-sm:p-2 max-sm:pb-2 sm:px-2 sm:py-4",
             !isOutOfStock &&
               "transition duration-500 ease-out group-hover:-translate-y-2",
           )}

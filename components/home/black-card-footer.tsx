@@ -28,9 +28,7 @@ export function BlackCardFooter() {
           target="_blank"
           rel="noopener noreferrer"
           className="transition-colors hover:text-neutral-600"
-        >
-          View website stats
-        </a>
+        ></a>
       </div>
     </div>
   );

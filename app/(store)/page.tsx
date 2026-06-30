@@ -4,10 +4,25 @@ import { getHero } from "lib/commerce";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  title: "Sainto: Sneakers, Clothes, Accessories, Watches, Tech, Lifestyle",
   description:
-    "Discover beautifully designed physical products. Updated weekly.",
+    "Buy and sell the hottest sneakers, streetwear, accessories, watches, tech products, and lifestyle items. Discover curated fashion and designer products updated weekly.",
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/",
+      "mn-MN": "/",
+    },
+  },
   openGraph: {
     type: "website",
+    title: "Sainto: Sneakers, Clothes, Accessories, Watches, Tech, Lifestyle",
+    description:
+      "Buy and sell the hottest sneakers, streetwear, accessories, watches, tech products, and lifestyle items. Discover curated fashion and designer products updated weekly.",
+  },
+  other: {
+    "description-mn":
+      "Хамгийн сүүлийн үеийн гутал, хувцас, аксессуар, цаг, техник хэрэгсэл, амьдралын хэрэглээний зүйлсийг худалдах, худалдан авах. Долоо хоног бүр шинээр шинэчлэгддэг загварын бүтээгдэхүүнүүдийг нээ.",
   },
 };
 

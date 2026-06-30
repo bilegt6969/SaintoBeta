@@ -1,3 +1,4 @@
+import { bundleAffinityCache } from "lib/recommendations/cache";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,6 +18,9 @@ export async function POST(request: NextRequest) {
       // as a recommendation (nearby products)
       revalidateTag("recommendations", {});
       revalidateTag(`recommendations-${affectedProductId}`, {});
+
+      // Invalidate bundle affinity cache so it rebuilds on next request
+      bundleAffinityCache.invalidate("bundle-affinity");
     }
 
     return NextResponse.json({ revalidated: true });

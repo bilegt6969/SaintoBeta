@@ -30,18 +30,24 @@ export function AddToCart({
     null,
   );
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   useEffect(() => {
-    if (!isPending && message === null) {
+    if (hasSubmitted && !isPending && message === null) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     }
-  }, [isPending, message]);
-  const [showSuccess, setShowSuccess] = useState(false);
+  }, [isPending, message, hasSubmitted]);
 
   const isAvailable = product.availableForSale;
 
   return (
-    <form action={formAction} className="w-full relative">
+    <form
+      action={formAction}
+      className="w-full relative"
+      onSubmit={() => setHasSubmitted(true)}
+    >
       <button
         type="submit"
         disabled={isPending || !isAvailable}

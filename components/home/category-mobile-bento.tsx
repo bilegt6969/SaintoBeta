@@ -23,7 +23,7 @@ export function CategoryMobileBento({
 
   if (items.length === 0) {
     return (
-      <div className="category-bento-mobile w-full lg:hidden">
+      <div className="category-bento-mobile w-full sm:hidden">
         <div className="category-bento-sidebar">{bentoSidebar}</div>
         <p className="mt-3 text-sm text-neutral-500">
           {emptyMessage ?? "No products yet."}
@@ -33,7 +33,7 @@ export function CategoryMobileBento({
   }
 
   return (
-    <div className="category-bento-mobile w-full lg:hidden">
+    <div className="category-bento-mobile w-full sm:hidden">
       <div className="flex flex-col gap-[var(--bento-gap)]">
         <div className="category-bento-sidebar">{bentoSidebar}</div>
         {items.map((child, index) => (

@@ -6,6 +6,7 @@ import InvestButton from "components/InvestButton";
 import { WelcomeCommerce } from "components/welcome-commerce";
 import { getCart } from "lib/commerce";
 import { baseUrl } from "lib/utils";
+import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 // @ts-ignore - nextjs-toploader types may not resolve correctly
 import { Analytics } from "@vercel/analytics/next";
@@ -21,17 +22,26 @@ const geist = Geist({
   display: "swap",
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: SITE_NAME!,
-    template: `%s | ${SITE_NAME}`,
+    default: "Sainto: Sneakers, Clothes, Accessories, Watches, Tech, Lifestyle",
+    template: `%s | Sainto`,
   },
   description:
-    "Discover beautifully designed physical products. Updated weekly.",
+    "Buy and sell the hottest sneakers, streetwear, accessories, watches, tech products, and lifestyle items. Discover curated fashion and designer products updated weekly.",
+  keywords:
+    "sneakers, streetwear, clothes, accessories, watches, tech, lifestyle, fashion, online shopping, Sainto, buy and sell, гутал, хувцас, аксессуар",
   robots: {
     follow: true,
     index: true,
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en-US": "/",
+      "mn-MN": "/",
+    },
   },
   icons: {
     icon: [
@@ -46,7 +56,16 @@ export const metadata = {
     type: "website",
     locale: "en_US",
     url: baseUrl,
-    siteName: SITE_NAME,
+    siteName: "Sainto",
+    title: "Sainto: Sneakers, Clothes, Accessories, Watches, Tech, Lifestyle",
+    description:
+      "Buy and sell the hottest sneakers, streetwear, accessories, watches, tech products, and lifestyle items. Discover curated fashion and designer products updated weekly.",
+  },
+  other: {
+    "description-mn":
+      "Хамгийн сүүлийн үеийн гутал, хувцас, аксессуар, цаг, техник хэрэгсэл, амьдралын хэрэглээний зүйлсийг худалдах, худалдан авах. Долоо хоног бүр шинээр шинэчлэгддэг загварын бүтээгдэхүүнүүдийг нээ.",
+    "keywords-mn":
+      "гутал, хувцас, аксессуар, цаг, техник, амьдралын хэрэглээ, загвар, онлайн худалдаа, Sainto, худалдах, худалдан авах",
   },
 };
 

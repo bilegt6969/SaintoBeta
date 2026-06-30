@@ -552,3 +552,8 @@ button {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+/* Hide footer on checkout success page */
+body:has(.hide-footer-on-success) > :last-child {
+  display: none;
+}

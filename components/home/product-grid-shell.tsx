@@ -69,7 +69,7 @@ export function ProductGridShell({
         </CategoryMobileBento>
 
         {/* Desktop: original 3-col grid — hidden below lg */}
-        <div className="hidden gap-x-4 gap-y-4 lg:grid lg:grid-cols-3">
+        <div className="hidden gap-x-4 gap-y-4 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3">
           {sidebar}
           {hasChildren ? (
             <motion.div

@@ -9,7 +9,7 @@ const BRANDS = [
   { label: "Moscot", href: "/search?q=Moscot" },
   { label: "Maison Margiela", href: "/search?q=Maison+Margiela" },
   { label: "Based", href: "/search?q=Based" },
-  { label: "Goyard", href: "/search?q=Goyard" },    
+  { label: "Goyard", href: "/search?q=Goyard" },
   { label: "Apple", href: "/search?q=Apple" },
   { label: "Logitech", href: "/search?q=Logitech" },
 ];
@@ -83,9 +83,7 @@ export function HomeSidebar() {
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-neutral-600"
-          >
-            View website stats
-          </a>
+          ></a>
         </div>
       </div>
     </article>

@@ -1,10 +1,14 @@
 "use client";
 
+import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { processSecureOrder, reserveOrderTxCode } from "app/actions/checkout";
 import { wipeCartCookie } from "components/cart/actions";
 import { useCart } from "components/cart/cart-context";
+import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth";
 import { AnimatePresence, motion } from "framer-motion";
+import { auth } from "lib/firebase";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 import { useMediaQuery } from "../../../hooks/use-media-query";
 
@@ -34,8 +38,11 @@ export function CheckoutForm({
   subtotalAmount,
   totalAmount,
 }: CheckoutFormProps) {
-  const { clearCart } = useCart();
+  const { clearCart, updateCartItem } = useCart();
+  const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
   const [step, setStep] = useState<
     "details" | "shipping" | "payment" | "success"
   >("details");
@@ -56,6 +63,34 @@ export function CheckoutForm({
     city: "Ulaanbaatar",
     notes: "",
   });
+
+  useEffect(() => {
+    if (!auth) {
+      setLoadingAuth(false);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoadingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Restore form data from localStorage if available
+    const savedForm = localStorage.getItem("checkout-form-data");
+    if (savedForm) {
+      try {
+        const parsedForm = JSON.parse(savedForm);
+        setForm(parsedForm);
+        localStorage.removeItem("checkout-form-data");
+      } catch (error) {
+        console.error("Failed to restore form data:", error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (step !== "payment" || txCode || isReservingCode) {
@@ -90,7 +125,13 @@ export function CheckoutForm({
 
   function isValidPhone(phone: string): boolean {
     const phoneRegex = /^\d{8}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ""));
+    return phoneRegex.test(phone.replace(/[\s-]/g, ""));
+  }
+
+  function formatPhoneNumber(phone: string): string {
+    const cleaned = phone.replace(/[\s-]/g, "");
+    if (cleaned.length <= 4) return cleaned;
+    return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
   }
 
   const steps = [
@@ -107,6 +148,15 @@ export function CheckoutForm({
     newStep: "details" | "shipping" | "payment" | "success",
     index: number,
   ) {
+    // Check authentication before proceeding to payment
+    if (newStep === "payment" && !user && !loadingAuth) {
+      // Save form data to localStorage
+      localStorage.setItem("checkout-form-data", JSON.stringify(form));
+      // Redirect to sign-in with return URL
+      router.push(`/sign-in?next=/checkout`);
+      return;
+    }
+
     const currentIndex = steps.findIndex((s) => s.key === step);
     const newIndex = steps.findIndex((s) => s.key === newStep);
     setDirection(newIndex > currentIndex ? 1 : -1);
@@ -179,8 +229,52 @@ export function CheckoutForm({
       day: "numeric",
       year: "numeric",
     });
+    const time = new Date().toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const fullName =
       `${form.firstName} ${form.lastName}`.trim() || "Ishan Zaad";
+
+    const downloadReceipt = () => {
+      const receiptContent = `
+INVOICE
+-------
+Invoice Number: ${txCode || "ESTUSFR3S-0012"}
+Date: ${today}
+Time: ${time}
+Customer: ${fullName}
+Email: ${form.email}
+Phone: ${form.phone}
+Address: ${form.address}, ${form.district}, ${form.city}
+
+ORDER ITEMS
+-----------
+${lines
+  .map(
+    (line) =>
+      `${line.title} ${line.subtitle ? `(${line.subtitle})` : ""} x${line.quantity} - ${formatPrice(line.price * line.quantity)}`,
+  )
+  .join("\n")}
+
+SUBTOTAL: ${formatPrice(subtotalAmount)}
+SHIPPING: ${formatPrice(SHIPPING)}
+TOTAL: ${formatPrice(total)}
+
+Payment Method: Bank Transfer
+Transaction Code: ${txCode}
+      `.trim();
+
+      const blob = new Blob([receiptContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `receipt-${txCode || "order"}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
 
     return (
       <div
@@ -395,7 +489,7 @@ export function CheckoutForm({
                         color: "#111",
                       }}
                     >
-                      {today}
+                      {today} at {time}
                     </div>
                   </div>
                   <div>
@@ -427,7 +521,7 @@ export function CheckoutForm({
                           letterSpacing: "-0.5px",
                         }}
                       >
-                        VISA
+                        BANK TRANSFER
                       </div>
                       <div>
                         <div
@@ -441,9 +535,49 @@ export function CheckoutForm({
                           {fullName}
                         </div>
                         <div style={{ fontSize: "12px", color: "#666" }}>
-                          Visa •••• 7347
+                          Golomt Bank
                         </div>
                       </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#555",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      Order Items
+                    </div>
+                    <div
+                      style={{
+                        background: "#fafafa",
+                        borderRadius: "8px",
+                        padding: "12px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                      }}
+                    >
+                      {lines.map((line) => (
+                        <div
+                          key={line.id}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            fontSize: "13px",
+                          }}
+                        >
+                          <span style={{ color: "#333" }}>
+                            {line.title} {line.subtitle && `(${line.subtitle})`}{" "}
+                            x{line.quantity}
+                          </span>
+                          <span style={{ fontWeight: 500, color: "#111" }}>
+                            {formatPrice(line.price * line.quantity)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -513,18 +647,18 @@ export function CheckoutForm({
             </div>
 
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={downloadReceipt}
               style={{
                 background: "none",
                 border: "none",
                 fontSize: "13px",
                 color: "#666",
                 cursor: "pointer",
-                marginBottom: "32px",
+                marginBottom: "16px",
                 padding: "8px",
               }}
             >
-              View invoice & Payment details &gt;
+              Download Receipt &gt;
             </button>
 
             <button
@@ -572,18 +706,8 @@ export function CheckoutForm({
   }
 
   return (
-    <div
-      style={{
-        background: "#f4f4f6",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
-        color: "#222",
-        display: isMobile ? "block" : "flex",
-        flexDirection: "column",
-        height: isMobile ? undefined : "100vh",
-        overflow: isMobile ? undefined : "hidden",
-      }}
-    >
-      <div className="w-full bg-[#f4f4f6]/70 backdrop-blur-xl border-b border-gray-200/50 flex justify-center flex-shrink-0">
+    <div className="bg-[#f5f5f5] text-neutral-900 antialiased min-h-screen">
+      <div className="w-full bg-white/70 backdrop-blur-xl border-b border-neutral-200/50 flex justify-center flex-shrink-0">
         <div
           className={`w-full max-w-[1040px] flex justify-between items-center ${
             isMobile ? "px-4 py-3" : "px-10 py-4"
@@ -591,7 +715,7 @@ export function CheckoutForm({
         >
           <button
             onClick={() => window.history.back()}
-            className="flex items-center gap-1.5 text-sm font-medium text-[#86868b] hover:text-[#1d1d1f] transition-colors bg-transparent border-none cursor-pointer p-0"
+            className="flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer p-0"
           >
             <svg
               width="16"
@@ -623,101 +747,65 @@ export function CheckoutForm({
       </div>
 
       <div
-        style={{
-          flex: isMobile ? undefined : 1,
-          maxWidth: 1040,
-          width: "100%",
-          margin: "0 auto",
-          padding: isMobile ? "20px 16px 20px 16px" : "40px 40px 40px 40px",
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 400px",
-          gap: isMobile ? 32 : 56,
-          alignItems: isMobile ? "start" : "center",
-        }}
+        className={`flex-1 max-w-[1040px] w-full mx-auto ${
+          isMobile ? "p-4" : "p-10"
+        } grid ${isMobile ? "grid-cols-1" : "grid-cols-[1fr_400px]"} gap-8 ${
+          isMobile ? "items-start" : "items-center"
+        }`}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
+        <div className="flex flex-col justify-center">
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: isMobile ? 24 : 32,
-            }}
+            className={`flex items-center justify-center ${
+              isMobile ? "mb-6" : "mb-8"
+            }`}
           >
             {steps.map((s, i) => {
               const isActive = s.key === step;
               const isDone = steps.findIndex((x) => x.key === step) > i;
               return (
-                <div
-                  key={s.key}
-                  style={{ display: "flex", alignItems: "center" }}
-                >
+                <div key={s.key} className="flex items-center">
                   <button
                     onClick={() => isDone && handleStepChange(s.key as any, i)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: isMobile ? 6 : 10,
-                      background: "none",
-                      border: "none",
-                      cursor: isDone ? "pointer" : "default",
-                      padding: 0,
-                    }}
+                    className={`flex items-center ${
+                      isMobile ? "gap-1.5" : "gap-2.5"
+                    } bg-transparent border-none cursor-${
+                      isDone ? "pointer" : "default"
+                    } p-0`}
                   >
                     <div
-                      style={{
-                        width: isMobile ? 22 : 26,
-                        height: isMobile ? 22 : 26,
-                        borderRadius: "50%",
-                        background: isActive
-                          ? "#ffffff"
+                      className={`flex items-center justify-center ${
+                        isMobile
+                          ? "w-[22px] h-[22px] text-[10px]"
+                          : "w-[26px] h-[26px] text-[11px]"
+                      } rounded-full font-semibold transition-all duration-300 ${
+                        isActive
+                          ? "bg-white text-neutral-900 border border-neutral-200 shadow-sm"
                           : isDone
-                            ? "#e2e2e7"
-                            : "transparent",
-                        color: isActive ? "#111" : isDone ? "#666" : "#aaa",
-                        border: isActive
-                          ? "1px solid rgba(0,0,0,0.08)"
-                          : isDone
-                            ? "none"
-                            : "1px solid #d2d2d7",
-                        boxShadow: isActive
-                          ? "0 2px 6px rgba(0,0,0,0.04)"
-                          : "none",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: isMobile ? 10 : 11,
-                        fontWeight: 600,
-                        transition: "all 0.3s ease",
-                      }}
+                            ? "bg-neutral-200 text-neutral-600 border-none"
+                            : "bg-transparent text-neutral-400 border border-neutral-300"
+                      }`}
                     >
                       {isDone ? "✓" : i + 1}
                     </div>
                     <span
-                      style={{
-                        fontSize: isMobile ? 12 : 14,
-                        fontWeight: isActive ? 600 : 500,
-                        color: isActive ? "#111" : isDone ? "#555" : "#a1a1a6",
-                        transition: "color 0.3s ease",
-                      }}
+                      className={`${
+                        isMobile ? "text-xs" : "text-sm"
+                      } font-medium transition-colors duration-300 ${
+                        isActive
+                          ? "text-neutral-900"
+                          : isDone
+                            ? "text-neutral-600"
+                            : "text-neutral-400"
+                      }`}
                     >
                       {s.label}
                     </span>
                   </button>
                   {i < steps.length - 1 && (
                     <div
-                      style={{
-                        width: isMobile ? 24 : 40,
-                        height: 1,
-                        background: isDone ? "#d2d2d7" : "#e5e5ea",
-                        margin: isMobile ? "0 8px" : "0 16px",
-                      }}
+                      className={`h-px ${
+                        isMobile ? "w-6 mx-2" : "w-10 mx-4"
+                      } ${isDone ? "bg-neutral-300" : "bg-neutral-200"}`}
                     />
                   )}
                 </div>
@@ -725,7 +813,7 @@ export function CheckoutForm({
             })}
           </div>
 
-          <div style={{ position: "relative" }}>
+          <div className="relative">
             <AnimatePresence mode="wait" custom={direction}>
               {step === "details" && (
                 <motion.div
@@ -736,17 +824,19 @@ export function CheckoutForm({
                   animate="animate"
                   exit="exit"
                 >
-                  <div style={getCardStyle(isMobile)}>
+                  <div
+                    className={`bg-white rounded-2xl border border-neutral-200/50 shadow-sm ${
+                      isMobile ? "p-6" : "p-9"
+                    }`}
+                  >
                     <Header
                       title="Contact details"
                       subtitle="Provide your coordinates for logistics and updates."
                     />
                     <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                        gap: 16,
-                      }}
+                      className={`grid ${
+                        isMobile ? "grid-cols-1" : "grid-cols-2"
+                      } gap-4`}
                     >
                       <Field
                         label="First name"
@@ -759,7 +849,7 @@ export function CheckoutForm({
                         onChange={(v: string) => update("lastName", v)}
                       />
                     </div>
-                    <div style={{ marginTop: 20 }}>
+                    <div className="mt-5">
                       <Field
                         label="Email address"
                         type="email"
@@ -767,33 +857,23 @@ export function CheckoutForm({
                         onChange={(v: string) => update("email", v)}
                       />
                       {form.email && !isValidEmail(form.email) && (
-                        <p
-                          style={{
-                            fontSize: 12,
-                            color: "#dc2626",
-                            marginTop: 4,
-                          }}
-                        >
+                        <p className="text-xs text-red-600 mt-1">
                           Please enter a valid email address
                         </p>
                       )}
                     </div>
-                    <div style={{ marginTop: 20 }}>
+                    <div className="mt-5">
                       <Field
                         label="Phone number"
                         type="tel"
                         value={form.phone}
-                        onChange={(v: string) => update("phone", v)}
+                        onChange={(v: string) =>
+                          update("phone", formatPhoneNumber(v))
+                        }
                         placeholder="+976 "
                       />
                       {form.phone && !isValidPhone(form.phone) && (
-                        <p
-                          style={{
-                            fontSize: 12,
-                            color: "#dc2626",
-                            marginTop: 4,
-                          }}
-                        >
+                        <p className="text-xs text-red-600 mt-1">
                           Please enter a valid 8-digit phone number
                         </p>
                       )}
@@ -802,7 +882,11 @@ export function CheckoutForm({
                       onClick={() =>
                         canProceedToShipping && handleStepChange("shipping", 1)
                       }
-                      style={primaryBtn(canProceedToShipping)}
+                      className={`w-full mt-7 px-6 py-4 rounded-full text-sm font-semibold transition-all ${
+                        canProceedToShipping
+                          ? "bg-neutral-900 text-white shadow-lg hover:shadow-xl hover:bg-neutral-800"
+                          : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                      }`}
                       disabled={!canProceedToShipping}
                     >
                       Continue to shipping
@@ -820,7 +904,11 @@ export function CheckoutForm({
                   animate="animate"
                   exit="exit"
                 >
-                  <div style={getCardStyle(isMobile)}>
+                  <div
+                    className={`bg-white rounded-2xl border border-neutral-200/50 shadow-sm ${
+                      isMobile ? "p-6" : "p-9"
+                    }`}
+                  >
                     <Header
                       title="Delivery address"
                       subtitle="Orders are dispatched reliably across Ulaanbaatar."
@@ -832,12 +920,9 @@ export function CheckoutForm({
                       placeholder="Khoroo, building, apartment..."
                     />
                     <div
-                      style={{
-                        marginTop: 20,
-                        display: "grid",
-                        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                        gap: 16,
-                      }}
+                      className={`mt-5 grid ${
+                        isMobile ? "grid-cols-1" : "grid-cols-2"
+                      } gap-4`}
                     >
                       <Field
                         label="District"
@@ -851,8 +936,8 @@ export function CheckoutForm({
                         onChange={(v: string) => update("city", v)}
                       />
                     </div>
-                    <div style={{ marginTop: 20 }}>
-                      <label style={labelStyle}>
+                    <div className="mt-5">
+                      <label className="block text-xs font-medium text-neutral-500 mb-1.5">
                         Delivery notes (optional)
                       </label>
                       <textarea
@@ -860,14 +945,18 @@ export function CheckoutForm({
                         onChange={(e) => update("notes", e.target.value)}
                         placeholder="Drop details, secure gates, or preferences..."
                         rows={2}
-                        style={{ ...inputStyle, resize: "none" }}
+                        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none transition-all duration-200 text-neutral-900 resize-none"
                       />
                     </div>
                     <button
                       onClick={() =>
                         canProceedToPayment && handleStepChange("payment", 2)
                       }
-                      style={primaryBtn(canProceedToPayment)}
+                      className={`w-full mt-7 px-6 py-4 rounded-full text-sm font-semibold transition-all ${
+                        canProceedToPayment
+                          ? "bg-neutral-900 text-white shadow-lg hover:shadow-xl hover:bg-neutral-800"
+                          : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                      }`}
                       disabled={!canProceedToPayment}
                     >
                       Continue to payment
@@ -885,110 +974,58 @@ export function CheckoutForm({
                   animate="animate"
                   exit="exit"
                 >
-                  <div style={getCardStyle(isMobile)}>
+                  <div
+                    className={`bg-white rounded-2xl border border-neutral-200/50 shadow-sm ${
+                      isMobile ? "p-6" : "p-9"
+                    }`}
+                  >
                     <Header
                       title="Bank Transfer"
                       subtitle="Finalize your transaction using our direct banking channels."
                     />
 
                     {formError && (
-                      <div
-                        style={{
-                          background: "#fef2f2",
-                          border: "1px solid #fecaca",
-                          borderRadius: 12,
-                          padding: "12px 16px",
-                          marginTop: 16,
-                        }}
-                      >
-                        <p
-                          style={{
-                            fontSize: 14,
-                            color: "#dc2626",
-                            margin: 0,
-                            lineHeight: 1.4,
-                          }}
-                        >
+                      <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mt-4">
+                        <p className="text-sm text-red-600 m-0 leading-relaxed">
                           {formError}
                         </p>
                       </div>
                     )}
 
-                    <div
-                      style={{
-                        background: "#f8f8fa",
-                        borderRadius: 16,
-                        border: "1px solid #eee",
-                        overflow: "hidden",
-                        marginTop: 12,
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "14px 20px",
-                          background: "#fff",
-                          borderBottom: "1px solid #f0f0f3",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 700,
-                            letterSpacing: "-0.01em",
-                            color: "#333",
-                          }}
-                        >
+                    <div className="bg-neutral-50 rounded-2xl border border-neutral-200 overflow-hidden mt-3">
+                      <div className="px-5 py-3.5 bg-white border-b border-neutral-200 flex items-center gap-2.5">
+                        <span className="text-sm font-bold tracking-tight text-neutral-800">
                           GOLOMT BANK
                         </span>
                       </div>
-                      <div
-                        style={{
-                          padding: 20,
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 14,
-                        }}
-                      >
-                        <div style={bankRowStyle}>
-                          <span style={bankLabelStyle}>Account Number</span>
-                          <span style={bankValueStyle}>3105222445</span>
+                      <div className="p-5 flex flex-col gap-3.5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-neutral-600 font-medium">
+                            Account Number
+                          </span>
+                          <span className="text-sm font-semibold text-neutral-900">
+                            3105222445
+                          </span>
                         </div>
-                        <div style={bankRowStyle}>
-                          <span style={bankLabelStyle}>IBAN</span>
-                          <span style={bankValueStyle}>29001500</span>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-neutral-600 font-medium">
+                            IBAN
+                          </span>
+                          <span className="text-sm font-semibold text-neutral-900">
+                            29001500
+                          </span>
                         </div>
-                        <div
-                          style={{
-                            padding: "14px 16px",
-                            background: "#ffffff",
-                            borderRadius: 12,
-                            border: "1px dashed #d2d2d7",
-                            marginTop: 4,
-                          }}
-                        >
-                          <div style={{ ...bankRowStyle, marginBottom: 0 }}>
-                            <span
-                              style={{
-                                ...bankLabelStyle,
-                                color: "#111",
-                                fontWeight: 600,
-                              }}
-                            >
+                        <div className="px-4 py-3.5 bg-white rounded-xl border border-dashed border-neutral-300 mt-1">
+                          <div className="flex justify-between items-center mb-0">
+                            <span className="text-sm text-neutral-900 font-semibold">
                               Dansnii Utga
                             </span>
                             <span
-                              style={{
-                                fontSize: 15,
-                                fontWeight: 700,
-                                color: txCodeError ? "#dc2626" : "#111",
-                                background: txCodeError ? "#fef2f2" : "#eef0f3",
-                                padding: "4px 10px",
-                                borderRadius: 6,
-                                fontFamily: "monospace",
-                              }}
+                              className={`text-sm font-bold px-2.5 py-1 rounded-md font-mono ${
+                                txCodeError
+                                  ? "text-red-600 bg-red-50"
+                                  : "text-neutral-900 bg-neutral-200"
+                              }`}
                             >
                               {txCodeError
                                 ? "Error"
@@ -997,26 +1034,12 @@ export function CheckoutForm({
                             </span>
                           </div>
                           {txCodeError && (
-                            <p
-                              style={{
-                                fontSize: 12,
-                                color: "#dc2626",
-                                margin: "8px 0 0",
-                                lineHeight: 1.4,
-                              }}
-                            >
+                            <p className="text-xs text-red-600 mt-2 leading-relaxed">
                               {txCodeError}
                             </p>
                           )}
                           {!txCodeError && (
-                            <p
-                              style={{
-                                fontSize: 12,
-                                color: "#777",
-                                margin: "8px 0 0",
-                                lineHeight: 1.4,
-                              }}
-                            >
+                            <p className="text-xs text-neutral-500 mt-2 leading-relaxed">
                               Please use this exact code as the transaction
                               description so we can automatically authenticate
                               your payment.
@@ -1028,7 +1051,11 @@ export function CheckoutForm({
 
                     <button
                       onClick={finalizeOrder}
-                      style={primaryBtn(!isSubmitting)}
+                      className={`w-full mt-7 px-6 py-4 rounded-full text-sm font-semibold transition-all ${
+                        !isSubmitting && txCode
+                          ? "bg-neutral-900 text-white shadow-lg hover:shadow-xl hover:bg-neutral-800"
+                          : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                      }`}
                       disabled={isSubmitting || !txCode}
                     >
                       {isSubmitting
@@ -1043,123 +1070,90 @@ export function CheckoutForm({
         </div>
 
         <div>
-          <div style={getCardStyle(isMobile)}>
-            <h3
-              style={{
-                fontSize: 16,
-                fontWeight: 600,
-                margin: "0 0 24px 0",
-                letterSpacing: "-0.01em",
-              }}
-            >
+          <div
+            className={`bg-white rounded-2xl border border-neutral-200/50 shadow-sm ${
+              isMobile ? "p-6" : "p-9"
+            }`}
+          >
+            <h3 className="text-base font-semibold mb-6 tracking-tight">
               Order summary
             </h3>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 20,
-                marginBottom: 32,
-                maxHeight: "calc(100vh - 400px)",
-                overflowY: "auto",
-                paddingTop: 10,
-                paddingRight: 12,
-              }}
-            >
+            <div className="flex flex-col gap-5 mb-8 max-h-[calc(100vh-400px)] overflow-y-auto pt-2.5 pr-3">
               {lines.length === 0 ? (
-                <p
-                  style={{
-                    fontSize: 14,
-                    color: "#999",
-                    textAlign: "center",
-                    margin: 0,
-                  }}
-                >
+                <p className="text-sm text-neutral-400 text-center m-0">
                   Your cart is empty now.
                 </p>
               ) : (
                 lines.map((line) => (
-                  <div
-                    key={line.id}
-                    style={{ display: "flex", gap: 16, alignItems: "center" }}
-                  >
-                    <div
-                      style={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: 12,
-                        background: "#f5f5f5",
-                        position: "relative",
-                        flexShrink: 0,
-                      }}
-                    >
+                  <div key={line.id} className="flex gap-4 items-center">
+                    <div className="w-16 h-16 rounded-xl bg-neutral-100 relative flex-shrink-0 overflow-hidden">
                       {line.image && (
                         <Image
                           src={line.image}
                           alt={line.title}
                           fill
-                          style={{ objectFit: "cover", borderRadius: 12 }}
+                          className="object-cover rounded-xl"
                         />
                       )}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: -8,
-                          right: -8,
-                          width: 20,
-                          height: 20,
-                          borderRadius: "50%",
-                          background: "#111",
-                          color: "#fff",
-                          fontSize: 11,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {line.quantity}
-                      </div>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500 }}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-neutral-900">
                         {line.title}
                       </div>
                       {line.subtitle && (
-                        <div
-                          style={{ fontSize: 13, color: "#666", marginTop: 2 }}
-                        >
+                        <div className="text-xs text-neutral-500 mt-0.5">
                           {line.subtitle}
                         </div>
                       )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => updateCartItem(line.id, "minus")}
+                          disabled={line.quantity <= 1}
+                          className={`w-7 h-7 rounded-lg border flex items-center justify-center p-0 transition-all ${
+                            line.quantity <= 1
+                              ? "border-neutral-200 text-neutral-300 cursor-not-allowed"
+                              : "border-neutral-300 text-neutral-900 hover:border-neutral-400 hover:bg-neutral-50"
+                          }`}
+                        >
+                          <MinusIcon className="w-4 h-4" />
+                        </button>
+                        <span className="text-sm font-medium min-w-5 text-center">
+                          {line.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateCartItem(line.id, "plus")}
+                          className="w-7 h-7 rounded-lg border border-neutral-300 text-neutral-900 hover:border-neutral-400 hover:bg-neutral-50 flex items-center justify-center p-0 transition-all"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 500 }}>
-                      {formatPrice(line.price * line.quantity)}
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-neutral-900">
+                        {formatPrice(line.price * line.quantity)}
+                      </div>
+                      <button
+                        onClick={() => updateCartItem(line.id, "delete")}
+                        className="bg-transparent border-none text-red-600 text-xs cursor-pointer p-0 mt-1 font-medium hover:text-red-700 transition-colors flex items-center gap-1 ml-auto"
+                      >
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                        Remove
+                      </button>
                     </div>
                   </div>
                 ))
               )}
             </div>
-            <div style={{ borderTop: "1px solid #f0f0f3", paddingTop: 24 }}>
-              <div style={rowStyle}>
-                <span style={{ color: "#666" }}>Subtotal</span>
+            <div className="border-t border-neutral-200 pt-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-600">Subtotal</span>
                 <span>{formatPrice(subtotalAmount)}</span>
               </div>
-              <div style={{ ...rowStyle, marginTop: 12 }}>
-                <span style={{ color: "#666" }}>Shipping</span>
+              <div className="flex justify-between text-sm mt-3">
+                <span className="text-neutral-600">Shipping</span>
                 <span>{formatPrice(SHIPPING)}</span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: 24,
-                  paddingTop: 24,
-                  borderTop: "1px solid #111",
-                  fontSize: 18,
-                  fontWeight: 600,
-                }}
-              >
+              <div className="flex justify-between mt-6 pt-6 border-t border-neutral-900 text-lg font-semibold">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
@@ -1173,21 +1167,11 @@ export function CheckoutForm({
 
 function Header({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div style={{ marginBottom: 28 }}>
-      <h2
-        style={{
-          fontSize: 22,
-          fontWeight: 600,
-          letterSpacing: "-0.02em",
-          margin: "0 0 6px 0",
-          color: "#111",
-        }}
-      >
+    <div className="mb-7">
+      <h2 className="text-xl font-semibold tracking-tight m-0 mb-1.5 text-neutral-900">
         {title}
       </h2>
-      <p style={{ fontSize: 14, color: "#666", margin: 0, lineHeight: 1.4 }}>
-        {subtitle}
-      </p>
+      <p className="text-sm text-neutral-600 m-0 leading-relaxed">{subtitle}</p>
     </div>
   );
 }
@@ -1200,80 +1184,17 @@ function Field({
   placeholder = "",
 }: any) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <label style={labelStyle}>{label}</label>
+    <div className="flex flex-col gap-1.5">
+      <label className="block text-xs font-medium text-neutral-500">
+        {label}
+      </label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        style={inputStyle}
+        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none transition-all duration-200 text-neutral-900"
       />
     </div>
   );
 }
-
-const getCardStyle = (isMobile: boolean): React.CSSProperties => ({
-  background: "#ffffff",
-  borderRadius: isMobile ? 20 : 24,
-  padding: isMobile ? 24 : 36,
-  boxShadow: "0 4px 24px rgba(0,0,0,0.02), 0 10px 40px rgba(0,0,0,0.03)",
-  border: "1px solid rgba(0,0,0,0.03)",
-  boxSizing: "border-box",
-});
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: 12,
-  fontWeight: 500,
-  color: "#555",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "13px 16px",
-  background: "#fdfdfe",
-  border: "1px solid #e2e2e7",
-  borderRadius: 12,
-  fontSize: 14,
-  outline: "none",
-  boxSizing: "border-box",
-  transition: "all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)",
-  color: "#111",
-};
-
-const primaryBtn = (isValid: boolean): React.CSSProperties => ({
-  width: "100%",
-  marginTop: 28,
-  padding: "16px 24px",
-  background: isValid ? "#111111" : "#e2e2e7",
-  color: isValid ? "#ffffff" : "#a1a1a6",
-  border: "none",
-  borderRadius: 999,
-  fontSize: 14,
-  fontWeight: 600,
-  cursor: isValid ? "pointer" : "not-allowed",
-  transition: "all 0.2s ease",
-  boxShadow: isValid ? "0 4px 14px rgba(0,0,0,0.2)" : "none",
-});
-
-const rowStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  fontSize: 14,
-};
-const bankRowStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-};
-const bankLabelStyle: React.CSSProperties = {
-  fontSize: 13,
-  color: "#666",
-  fontWeight: 500,
-};
-const bankValueStyle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 600,
-  color: "#222",
-};

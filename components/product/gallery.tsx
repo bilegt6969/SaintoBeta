@@ -93,10 +93,12 @@ export function Gallery({
 
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   useEffect(() => {
     setIsMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
+      setViewportSize({ width: window.innerWidth, height: window.innerHeight });
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -104,16 +106,22 @@ export function Gallery({
   }, []);
 
   const toggleFullscreen = useCallback(() => {
-    if (!imageContainerRef.current) return;
-
-    if (!document.fullscreenElement) {
-      imageContainerRef.current.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
+    if (isMobile) {
+      setIsFullscreen((prev) => !prev);
     } else {
-      document.exitFullscreen();
+      if (!imageContainerRef.current) return;
+
+      if (!document.fullscreenElement) {
+        imageContainerRef.current.requestFullscreen().catch((err) => {
+          console.error(
+            `Error attempting to enable fullscreen: ${err.message}`,
+          );
+        });
+      } else {
+        document.exitFullscreen();
+      }
     }
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -210,6 +218,45 @@ export function Gallery({
             priority={true}
             fetchPriority="high"
           />
+        </div>
+      )}
+
+      {isMobile && isFullscreen && (
+        <div className="fixed inset-0 z-[9998] bg-black flex flex-col">
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label="Exit fullscreen"
+            className="absolute top-5 right-5 z-[9999] flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-all hover:bg-white/30"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="flex-1 overflow-y-auto snap-y snap-mandatory">
+            {images.map((image, index) => (
+              <div
+                key={`${image.src}-${index}`}
+                className="w-full snap-center flex items-center justify-center shrink-0"
+              >
+                <img
+                  className="object-contain max-w-full max-h-full"
+                  src={image.src}
+                  alt={image.altText}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

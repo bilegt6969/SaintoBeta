@@ -57,7 +57,7 @@ export default function MobileMenu({ isOpen, setIsOpen, categories }: Props) {
               leaveFrom="opacity-100 translate-y-0 scale-100"
               leaveTo="opacity-0 -translate-y-8 scale-95"
             >
-              <Dialog.Panel className="relative w-full rounded-[32px] bg-white pb-6 pt-2 shadow-2xl">
+              <Dialog.Panel className="relative w-full mt-3 rounded-[32px] bg-white pb-6 pt-5 shadow-2xl">
                 <ul className="flex flex-col">
                   {/* Static Links */}
                   <li className="border-b border-neutral-200/70 px-6 py-5">
@@ -185,7 +185,7 @@ export default function MobileMenu({ isOpen, setIsOpen, categories }: Props) {
                 </ul>
 
                 {/* Black Sign In Button */}
-                <div className="mt-6 px-6 bg-black h-full">
+                <div className="mt-6 px-6 h-full">
                   <SignInButton
                     className="flex w-fit items-center gap-2 rounded-2xl px-5 py-3.5 text-lg font-medium text-white transition-colors hover:bg-neutral-800 active:scale-95"
                     onClick={handleClose}

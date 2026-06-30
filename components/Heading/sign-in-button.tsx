@@ -48,7 +48,7 @@ export function SignInButton({
         href="/account" // Redirects to an account/profile page
         onClick={onClick}
         className={cn(
-          "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50 overflow-hidden transition-opacity hover:opacity-90 active:scale-[0.98]",
+          "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white overflow-hidden transition-opacity hover:opacity-90 active:scale-[0.98]",
           className,
         )}
       >
@@ -63,7 +63,7 @@ export function SignInButton({
             />
           </div>
         ) : (
-          <User className="h-4 w-4 text-neutral-600" strokeWidth={2} />
+          <User className="h-4 w-4 text-black" strokeWidth={2} />
         )}
       </Link>
     );
